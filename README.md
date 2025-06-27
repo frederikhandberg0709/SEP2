@@ -1,15 +1,39 @@
-# SEP3 – Chat app
+# SEP2 – Chat app
 
-## Functional Requirements
+## Requirements
+
+### Functional
 
 **Create account:** As a user, I want to create an account so that I can log in and send messages.
 
 **Login:** As a user, I want to log in with my username and password so that I can access my messages.
 
+**Logout:** As a user, I want to log out of my account so that I can secure my session.
+
 **Send message:** As a user, I want to send a message to another user so that I can communicate with them.
 
+**Receive messages:** As a user, I want to receive messages from other users in real-time so that I can stay updated on conversations.
+
 **Contact list:** As a user, I want to see a list of users I’ve had conversations with so that I can quickly continue them.
+
+**Start new conversation:** As a user, I want to initiate a conversation with a new user by entering their profile name or username so that I can initiate conversations with people not in my contact list.
+
+**Select active conversation:** As a user, I want to click on a contact to view our conversation so that I can switch between different chats.
 
 **Message history:** As a user, I want to retrieve recent messages in a conversation so that I can read what we’ve talked about.
 
 **Message timestamp:** As a user, I want to see a timestamp on each message so that I know when it was sent.
+
+**Chronological ordering:** As a user, I want messages displayed from oldest to newest so that I can follow the natural flow of conversation.
+
+**Scroll through history:** As a user, I want to scroll up to see older messages in a conversation so that I can review our complete chat history.
+
+### Non-functional
+
+Passwords must be hashed using a secure algorithm before being stored in the database.
+
+Only authenticated users may send and receive messages.
+
+Cross-platform support for Windows and macOS.
+
+Application must follow MVVM pattern with clear separation between View, ViewModel, and Model layers
