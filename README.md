@@ -36,4 +36,6 @@ Only authenticated users may send and receive messages.
 
 Cross-platform support for Windows and macOS.
 
-Application must follow MVVM pattern with clear separation between View, ViewModel, and Model layers
+Application must follow MVVM pattern with clear separation between View, ViewModel, and Model layers.
+
+Application must display all interface text and error messages in English.
