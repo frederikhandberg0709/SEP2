@@ -4,33 +4,33 @@
 
 ### Functional
 
-**Create account:** As a user, I want to create an account so that I can log in and send messages.
+**Create account:** As a user, I want to create an account, so that I can log in and send messages.
 
-**Login:** As a user, I want to log in with my username and password so that I can access my messages.
+**Login:** As a user, I want to log in with my username and password, so that I can access my messages.
 
-**Logout:** As a user, I want to log out of my account so that I can secure my session.
+**Logout:** As a user, I want to log out of my account, so that I can secure my session.
 
-**Send message:** As a user, I want to send a message to another user so that I can communicate with them.
+**Send message:** As a user, I want to send a message to another user, so that I can communicate with them.
 
-**Receive messages:** As a user, I want to receive messages from other users in real-time so that I can stay updated on conversations.
+**Receive messages:** As a user, I want to receive messages from other users in real-time, so that I can stay updated on conversations.
 
-**Contact list:** As a user, I want to see a list of users I’ve had conversations with so that I can quickly continue them.
+**Contact list:** As a user, I want to see a list of users I’ve had conversations with, so that I can quickly continue them.
 
-**Start new conversation:** As a user, I want to initiate a conversation with a new user by entering their profile name or username so that I can initiate conversations with people not in my contact list.
+**Start new conversation:** As a user, I want to initiate a conversation with a new user by entering their profile name or username, so that I can initiate conversations with people not in my contact list.
 
-**Select active conversation:** As a user, I want to click on a contact to view our conversation so that I can switch between different chats.
+**Select active conversation:** As a user, I want to click on a contact to view our conversation, so that I can switch between different chats.
 
 **Create group chat:** As a user, I want to create a group chat, so I have a dedicated space to communicate with multiple users.
 
 **Invite users:** As a user, I want to invite other users to a group chat, so they can join the conversation and collaborate with the group.
 
-**Message history:** As a user, I want to retrieve recent messages in a conversation so that I can read what we’ve talked about.
+**Message history:** As a user, I want to retrieve recent messages in a conversation, so that I can read what we’ve talked about.
 
-**Message timestamp:** As a user, I want to see a timestamp on each message so that I know when it was sent.
+**Message timestamp:** As a user, I want to see a timestamp on each message, so that I know when it was sent.
 
-**Chronological ordering:** As a user, I want messages displayed from oldest to newest so that I can follow the natural flow of conversation.
+**Chronological ordering:** As a user, I want messages displayed from oldest to newest, so that I can follow the natural flow of conversation.
 
-**Scroll through history:** As a user, I want to scroll up to see older messages in a conversation so that I can review our complete chat history.
+**Scroll through history:** As a user, I want to scroll up to see older messages in a conversation, so that I can review our complete chat history.
 
 ### Non-functional
 
