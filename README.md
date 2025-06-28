@@ -20,6 +20,8 @@
 
 **Select active conversation:** As a user, I want to click on a contact to view our conversation so that I can switch between different chats.
 
+**Group chat:** As a user, I want to create a group chat and invite other users, so that we can communicate together in a shared space.
+
 **Message history:** As a user, I want to retrieve recent messages in a conversation so that I can read what we’ve talked about.
 
 **Message timestamp:** As a user, I want to see a timestamp on each message so that I know when it was sent.
