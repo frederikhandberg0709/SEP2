@@ -20,7 +20,9 @@
 
 **Select active conversation:** As a user, I want to click on a contact to view our conversation so that I can switch between different chats.
 
-**Group chat:** As a user, I want to create a group chat and invite other users, so that we can communicate together in a shared space.
+**Create group chat:** As a user, I want to create a group chat, so I have a dedicated space to communicate with multiple users.
+
+**Invite users:** As a user, I want to invite other users to a group chat, so they can join the conversation and collaborate with the group.
 
 **Message history:** As a user, I want to retrieve recent messages in a conversation so that I can read what we’ve talked about.
 
