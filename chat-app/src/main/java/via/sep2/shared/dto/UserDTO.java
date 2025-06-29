@@ -1,11 +1,17 @@
 package via.sep2.shared.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 
-// TODO: decide if we should use Lombok for automatic constructor, getters and setters.
-// also, might be good to use library like Jackson instead of Serializable interface.
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserDTO implements Serializable {
     private int id;
     private String username;
-    private String displayName;
+    private String firstName;
+    private String lastName;
 }
