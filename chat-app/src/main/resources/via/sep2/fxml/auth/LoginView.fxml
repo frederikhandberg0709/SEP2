@@ -9,34 +9,41 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<VBox alignment="CENTER" spacing="30.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="via.sep2.PrimaryController">
+<VBox alignment="CENTER" spacing="30.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="via.sep2.view.auth.LoginViewController">
    <children>
       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Login" textAlignment="CENTER">
          <font>
             <Font name="System Bold" size="20.0" />
          </font>
       </Text>
+
+      <Label fx:id="errorLabel" styleClass="error-text" textAlignment="CENTER" wrapText="true" visible="false" managed="false">
+         <font>
+            <Font size="12.0" />
+         </font>
+      </Label>
+
       <VBox alignment="TOP_CENTER" spacing="20.0">
          <children>
             <VBox spacing="5.0">
                <children>
                   <Label text="Username" />
-                  <TextField prefWidth="200.0" promptText="Username..." />
+                  <TextField fx:id="usernameField" prefWidth="200.0" promptText="Username..." />
                </children>
             </VBox>
             <VBox spacing="5.0">
                <children>
                   <Label text="Password" />
-                  <PasswordField prefWidth="200.0" promptText="Password..." />
+                  <PasswordField fx:id="passwordField" prefWidth="200.0" promptText="Password..." />
                </children>
             </VBox>
-            <Button mnemonicParsing="false" text="Login" />
+            <Button fx:id="loginButton" mnemonicParsing="false" onAction="#handleLogin" text="Login" defaultButton="true" />
          </children>
       </VBox>
       <VBox alignment="TOP_CENTER" spacing="10.0">
          <children>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Don't already have an account?" />
-            <Button mnemonicParsing="false" text="Create Account" />
+            <Button fx:id="createAccountButton" mnemonicParsing="false" onAction="#handleCreateAccount"  text="Create Account" />
          </children>
       </VBox>
    </children>

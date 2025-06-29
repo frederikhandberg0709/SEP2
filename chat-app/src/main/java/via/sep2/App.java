@@ -8,8 +8,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-import io.github.cdimascio.dotenv.Dotenv;
-
 /**
  * JavaFX App
  */
@@ -17,16 +15,9 @@ public class App extends Application {
 
     private static Scene scene;
 
-    static {
-        Dotenv dotenv = Dotenv.load();
-        System.setProperty("DB_URL", dotenv.get("DB_URL"));
-        System.setProperty("DB_USER", dotenv.get("DB_USER"));
-        System.setProperty("DB_PASSWORD", dotenv.get("DB_PASSWORD"));
-    }
-
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("primary"), 640, 480);
+        scene = new Scene(loadFXML("auth/LoginView"), 640, 480);
         stage.setScene(scene);
         stage.show();
     }
@@ -36,7 +27,9 @@ public class App extends Application {
     }
 
     private static Parent loadFXML(String fxml) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
+        // FXMLLoader fxmlLoader = new
+        // FXMLLoader(App.class.getResource("/via/sep2/fxml/" + fxml + ".fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("/via/sep2/fxml/auth/CreateAccountView.fxml"));
         return fxmlLoader.load();
     }
 
