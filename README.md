@@ -22,7 +22,11 @@
 
 **Create group chat:** As a user, I want to create a group chat, so I have a dedicated space to communicate with multiple users.
 
-**Invite users:** As a user, I want to invite other users to a group chat, so they can join the conversation and collaborate with the group.
+**Invite users:** As a admin, I want to invite other users to a group chat, so they can join the conversation and collaborate with the group.
+
+**Remove members:** As an admin, I want to remove members from a group chat, so that I can manage group size and keep discussions focused.
+
+**Group chat roles:** As a user, I want group chat roles such as admin and members, so that admins can manage the group chat effectively.
 
 **Message history:** As a user, I want to retrieve recent messages in a conversation, so that I can read what we’ve talked about.
 
