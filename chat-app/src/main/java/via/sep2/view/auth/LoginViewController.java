@@ -3,14 +3,11 @@ package via.sep2.view.auth;
 import java.io.IOException;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
+import via.sep2.util.SceneManager;
 import via.sep2.viewmodel.auth.LoginViewModel;
 
 public class LoginViewController {
@@ -27,14 +24,15 @@ public class LoginViewController {
     private Label errorLabel;
 
     private LoginViewModel viewModel;
+    private SceneManager sceneManager;
 
     public LoginViewController() {
         this.viewModel = new LoginViewModel();
+        this.sceneManager = sceneManager.getInstance();
     }
 
     @FXML
     private void initialize() {
-        addStylesheet();
         setupDataBinding();
         setupEventHandlers();
         setupValidation();
@@ -47,11 +45,7 @@ public class LoginViewController {
 
     @FXML
     private void handleCreateAccount() {
-        try {
-            navigateToCreateAccount();
-        } catch (IOException e) {
-            viewModel.setErrorMessage("Could not open create account page");
-        }
+        sceneManager.showCreateAccount();
     }
 
     public void resetForm() {
@@ -61,19 +55,6 @@ public class LoginViewController {
 
     public LoginViewModel getViewModel() {
         return viewModel;
-    }
-
-    private void addStylesheet() {
-        usernameField.sceneProperty().addListener((obs, oldScene, newScene) -> {
-            if (newScene != null) {
-                try {
-                    String cssPath = getClass().getResource("/via/sep2/css/auth.css").toExternalForm();
-                    newScene.getStylesheets().add(cssPath);
-                } catch (Exception e) {
-                    System.out.println("Could not load CSS file: " + e.getMessage());
-                }
-            }
-        });
     }
 
     private void setupDataBinding() {
@@ -126,16 +107,6 @@ public class LoginViewController {
         } catch (IOException e) {
             viewModel.setErrorMessage("Could not open main application");
         }
-    }
-
-    private void navigateToCreateAccount() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/via/sep2/fxml/auth/CreateAccountView.fxml"));
-        Parent root = loader.load();
-
-        Stage stage = (Stage) createAccountButton.getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setTitle("Create Account - Chat App");
     }
 
     private void navigateToMainScreen() throws IOException {

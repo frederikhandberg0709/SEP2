@@ -1,4 +1,4 @@
-package via.sep2.utils;
+package via.sep2.util;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;

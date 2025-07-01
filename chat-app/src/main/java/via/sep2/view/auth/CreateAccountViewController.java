@@ -1,19 +1,14 @@
 package via.sep2.view.auth;
 
-import java.io.IOException;
-
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 import javafx.util.Duration;
+import via.sep2.util.SceneManager;
 import via.sep2.viewmodel.auth.CreateAccountViewModel;
 
 public class CreateAccountViewController {
@@ -44,14 +39,15 @@ public class CreateAccountViewController {
     private Label confirmPasswordValidationLabel;
 
     private CreateAccountViewModel viewModel;
+    private SceneManager sceneManager;
 
     public CreateAccountViewController() {
         this.viewModel = new CreateAccountViewModel();
+        this.sceneManager = sceneManager.getInstance();
     }
 
     @FXML
     private void initialize() {
-        addStylesheet();
         setupDataBinding();
         setupEventHandlers();
         setupValidation();
@@ -64,11 +60,7 @@ public class CreateAccountViewController {
 
     @FXML
     private void handleLogin() {
-        try {
-            navigateToLogin();
-        } catch (IOException e) {
-            viewModel.setErrorMessage("Could not open login page");
-        }
+        sceneManager.showLogin();
     }
 
     public void resetForm() {
@@ -78,19 +70,6 @@ public class CreateAccountViewController {
 
     public CreateAccountViewModel getViewModel() {
         return viewModel;
-    }
-
-    private void addStylesheet() {
-        firstNameField.sceneProperty().addListener((obs, oldScene, newScene) -> {
-            if (newScene != null) {
-                try {
-                    String cssPath = getClass().getResource("/via/sep2/css/auth.css").toExternalForm();
-                    newScene.getStylesheets().add(cssPath);
-                } catch (Exception e) {
-                    System.out.println("Could not load CSS file: " + e.getMessage());
-                }
-            }
-        });
     }
 
     private void setupDataBinding() {
@@ -220,31 +199,9 @@ public class CreateAccountViewController {
     }
 
     private void handleSuccessfulAccountCreation() {
-
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(3), e -> {
-            try {
-                navigateToLogin();
-            } catch (IOException ioException) {
-                handleNavigationError("Could not navigate to login page", ioException);
-            }
+            sceneManager.showLogin();
         }));
         timeline.play();
-    }
-
-    private void handleNavigationError(String userMessage, Exception exception) {
-        System.err.println("Navigation error: " + exception.getMessage());
-        exception.printStackTrace();
-
-        viewModel.setErrorMessage(userMessage + ". Please try again.");
-    }
-
-    private void navigateToLogin() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/via/sep2/fxml/auth/LoginView.fxml"));
-        Parent root = loader.load();
-
-        Stage stage = (Stage) loginButton.getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setTitle("Login - Chat App");
     }
 }
