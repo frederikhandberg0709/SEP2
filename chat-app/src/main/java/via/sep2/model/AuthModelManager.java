@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import via.sep2.dao.UserDAO;
 import via.sep2.exception.AuthenticationException;
 import via.sep2.shared.dto.UserDTO;
-import via.sep2.utils.PasswordHasher;
+import via.sep2.util.PasswordHasher;
 
 public class AuthModelManager implements AuthModel {
 
