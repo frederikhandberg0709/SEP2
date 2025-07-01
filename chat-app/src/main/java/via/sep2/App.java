@@ -1,40 +1,20 @@
 package via.sep2;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
+import via.sep2.util.SceneManager;
 
-import java.io.IOException;
-
-/**
- * JavaFX App
- */
 public class App extends Application {
 
-    private static Scene scene;
-
     @Override
-    public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("auth/LoginView"), 640, 480);
-        stage.setScene(scene);
-        stage.show();
-    }
+    public void start(Stage primaryStage) {
+        SceneManager sceneManager = SceneManager.getInstance();
+        sceneManager.initialize(primaryStage);
 
-    static void setRoot(String fxml) throws IOException {
-        scene.setRoot(loadFXML(fxml));
-    }
-
-    private static Parent loadFXML(String fxml) throws IOException {
-        // FXMLLoader fxmlLoader = new
-        // FXMLLoader(App.class.getResource("/via/sep2/fxml/" + fxml + ".fxml"));
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("/via/sep2/fxml/auth/CreateAccountView.fxml"));
-        return fxmlLoader.load();
+        sceneManager.showLogin();
     }
 
     public static void main(String[] args) {
         launch();
     }
-
 }
