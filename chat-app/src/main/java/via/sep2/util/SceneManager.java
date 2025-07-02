@@ -1,9 +1,13 @@
 package via.sep2.util;
 
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import via.sep2.client.connection.ConnectionManager;
+import via.sep2.client.event.EventListener;
+import via.sep2.client.event.events.LogoutEvent;
 import via.sep2.client.factory.ServiceFactory;
 
 import java.io.IOException;
@@ -20,6 +24,8 @@ public class SceneManager {
     private Map<String, Scene> sceneCache;
     private Map<String, Object> controllerCache;
 
+    private final EventListener<LogoutEvent> logoutListener;
+
     public static final String LOGIN_SCENE = "login";
     public static final String CREATE_ACCOUNT_SCENE = "create_account";
     public static final String MAIN_CHAT_SCENE = "main_chat";
@@ -27,6 +33,9 @@ public class SceneManager {
     private SceneManager() {
         this.sceneCache = new HashMap<>();
         this.controllerCache = new HashMap<>();
+
+        this.logoutListener = this::handleLogout;
+
         logger.info("SceneManager initialized");
     }
 
@@ -40,11 +49,31 @@ public class SceneManager {
     public void initialize(Stage primaryStage) {
         this.primaryStage = primaryStage;
 
+        ConnectionManager.getInstance().getEventBus()
+                .subscribe(LogoutEvent.class, logoutListener);
+
         primaryStage.setOnCloseRequest(event -> {
             cleanup();
         });
 
         logger.info("SceneManager initialized with primary stage");
+    }
+
+    private void handleLogout(LogoutEvent event) {
+        Platform.runLater(() -> {
+            logger.info("Handling logout event for user: " +
+                    (event.getUser() != null ? event.getUser().getUsername() : "unknown"));
+
+            clearUserSpecificScenes();
+
+            showLogin();
+        });
+    }
+
+    private void clearUserSpecificScenes() {
+        removeFromCache(MAIN_CHAT_SCENE);
+
+        logger.info("Cleared user-specific scenes from cache");
     }
 
     public void showLogin() {
@@ -80,6 +109,10 @@ public class SceneManager {
 
     public void cleanup() {
         logger.info("Cleaning up SceneManager");
+
+        ConnectionManager.getInstance().getEventBus()
+                .unsubscribe(LogoutEvent.class, logoutListener);
+
         clearCache();
     }
 
@@ -106,11 +139,13 @@ public class SceneManager {
     public void clearCache() {
         sceneCache.clear();
         controllerCache.clear();
+        logger.info("Scene cache cleared");
     }
 
     public void removeFromCache(String sceneId) {
         sceneCache.remove(sceneId);
         controllerCache.remove(sceneId);
+        logger.info("Removed from cache: " + sceneId);
     }
 
     private void loadStylesheet(Scene scene, String... stylesheetPaths) {
