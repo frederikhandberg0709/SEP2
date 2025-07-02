@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import via.sep2.client.connection.ConnectionManager;
 import via.sep2.client.event.EventListener;
+import via.sep2.client.event.events.LoginSuccessEvent;
 import via.sep2.client.event.events.LogoutEvent;
 import via.sep2.client.factory.ServiceFactory;
 
@@ -24,6 +25,7 @@ public class SceneManager {
     private Map<String, Scene> sceneCache;
     private Map<String, Object> controllerCache;
 
+    private final EventListener<LoginSuccessEvent> loginSuccessListener;
     private final EventListener<LogoutEvent> logoutListener;
 
     public static final String LOGIN_SCENE = "login";
@@ -34,6 +36,7 @@ public class SceneManager {
         this.sceneCache = new HashMap<>();
         this.controllerCache = new HashMap<>();
 
+        this.loginSuccessListener = this::handleLoginSuccess;
         this.logoutListener = this::handleLogout;
 
         logger.info("SceneManager initialized");
@@ -50,6 +53,9 @@ public class SceneManager {
         this.primaryStage = primaryStage;
 
         ConnectionManager.getInstance().getEventBus()
+                .subscribe(LoginSuccessEvent.class, loginSuccessListener);
+
+        ConnectionManager.getInstance().getEventBus()
                 .subscribe(LogoutEvent.class, logoutListener);
 
         primaryStage.setOnCloseRequest(event -> {
@@ -57,6 +63,21 @@ public class SceneManager {
         });
 
         logger.info("SceneManager initialized with primary stage");
+    }
+
+    private void handleLoginSuccess(LoginSuccessEvent event) {
+        Platform.runLater(() -> {
+            logger.info("Handling login success event for user: " +
+                    (event.getUser() != null ? event.getUser().getUsername() : "unknown"));
+
+            try {
+                showMainChat();
+                logger.info("Successfully navigated to main chat after login");
+            } catch (Exception e) {
+                logger.severe("Failed to navigate to main chat after login: " + e.getMessage());
+                showLogin();
+            }
+        });
     }
 
     private void handleLogout(LogoutEvent event) {
@@ -109,6 +130,9 @@ public class SceneManager {
 
     public void cleanup() {
         logger.info("Cleaning up SceneManager");
+
+        ConnectionManager.getInstance().getEventBus()
+                .unsubscribe(LoginSuccessEvent.class, loginSuccessListener);
 
         ConnectionManager.getInstance().getEventBus()
                 .unsubscribe(LogoutEvent.class, logoutListener);
