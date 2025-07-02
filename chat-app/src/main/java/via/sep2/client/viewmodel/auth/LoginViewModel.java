@@ -1,4 +1,4 @@
-package via.sep2.viewmodel.auth;
+package via.sep2.client.viewmodel.auth;
 
 import java.util.logging.Logger;
 

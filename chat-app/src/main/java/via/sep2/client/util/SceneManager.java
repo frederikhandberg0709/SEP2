@@ -1,4 +1,4 @@
-package via.sep2.util;
+package via.sep2.client.util;
 
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;

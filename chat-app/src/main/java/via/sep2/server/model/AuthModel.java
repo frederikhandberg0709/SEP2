@@ -1,7 +1,7 @@
-package via.sep2.model;
+package via.sep2.server.model;
 
-import via.sep2.exception.AuthenticationException;
 import via.sep2.shared.dto.UserDTO;
+import via.sep2.shared.exception.AuthenticationException;
 
 public interface AuthModel {
 

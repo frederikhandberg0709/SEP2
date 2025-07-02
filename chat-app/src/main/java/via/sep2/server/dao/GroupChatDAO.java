@@ -1,4 +1,4 @@
-package via.sep2.dao;
+package via.sep2.server.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import via.sep2.database.DatabaseConnection;
+import via.sep2.server.database.DatabaseConnection;
 import via.sep2.shared.dto.ChatMemberDTO;
 import via.sep2.shared.dto.ChatRoomDTO;
 import via.sep2.shared.dto.MemberRole;

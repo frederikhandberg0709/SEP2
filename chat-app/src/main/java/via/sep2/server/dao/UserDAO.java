@@ -1,11 +1,11 @@
-package via.sep2.dao;
+package via.sep2.server.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import via.sep2.database.DatabaseConnection;
+import via.sep2.server.database.DatabaseConnection;
 import via.sep2.shared.dto.UserDTO;
 
 public class UserDAO {

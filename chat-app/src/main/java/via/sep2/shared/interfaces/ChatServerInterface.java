@@ -1,4 +1,4 @@
-package via.sep2.server.rmi;
+package via.sep2.shared.interfaces;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

@@ -7,7 +7,7 @@ import javafx.application.Platform;
 import javafx.stage.Stage;
 import via.sep2.client.connection.ConnectionManager;
 import via.sep2.client.factory.ServiceFactory;
-import via.sep2.util.SceneManager;
+import via.sep2.client.util.SceneManager;
 
 public class App extends Application {
 

@@ -1,4 +1,4 @@
-package via.sep2.view.auth;
+package via.sep2.client.view.auth;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -8,8 +8,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.util.Duration;
-import via.sep2.util.SceneManager;
-import via.sep2.viewmodel.auth.CreateAccountViewModel;
+import via.sep2.client.util.SceneManager;
+import via.sep2.client.viewmodel.auth.CreateAccountViewModel;
 
 public class CreateAccountViewController {
 

@@ -1,4 +1,4 @@
-package via.sep2.util;
+package via.sep2.server.util;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;

@@ -1,11 +1,11 @@
-package via.sep2.model;
+package via.sep2.server.model;
 
 import java.sql.SQLException;
 
-import via.sep2.dao.UserDAO;
-import via.sep2.exception.AuthenticationException;
+import via.sep2.server.dao.UserDAO;
+import via.sep2.server.util.PasswordHasher;
 import via.sep2.shared.dto.UserDTO;
-import via.sep2.util.PasswordHasher;
+import via.sep2.shared.exception.AuthenticationException;
 
 public class AuthModelManager implements AuthModel {
 

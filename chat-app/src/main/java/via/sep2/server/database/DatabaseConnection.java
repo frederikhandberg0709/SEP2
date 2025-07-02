@@ -1,4 +1,4 @@
-package via.sep2.database;
+package via.sep2.server.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

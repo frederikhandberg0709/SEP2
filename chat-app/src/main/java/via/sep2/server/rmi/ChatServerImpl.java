@@ -8,19 +8,21 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-import via.sep2.dao.DirectChatDAO;
-import via.sep2.dao.GroupChatDAO;
-import via.sep2.dao.MessageDAO;
-import via.sep2.dao.UserDAO;
-import via.sep2.exception.AuthenticationException;
-import via.sep2.model.AuthModel;
-import via.sep2.model.AuthModelManager;
+import via.sep2.server.dao.DirectChatDAO;
+import via.sep2.server.dao.GroupChatDAO;
+import via.sep2.server.dao.MessageDAO;
+import via.sep2.server.dao.UserDAO;
+import via.sep2.server.model.AuthModel;
+import via.sep2.server.model.AuthModelManager;
 import via.sep2.shared.dto.ChatMemberDTO;
 import via.sep2.shared.dto.ChatRoomDTO;
 import via.sep2.shared.dto.DirectChatDTO;
 import via.sep2.shared.dto.MemberRole;
 import via.sep2.shared.dto.MessageDTO;
 import via.sep2.shared.dto.UserDTO;
+import via.sep2.shared.exception.AuthenticationException;
+import via.sep2.shared.interfaces.ChatClientCallbackInterface;
+import via.sep2.shared.interfaces.ChatServerInterface;
 
 public class ChatServerImpl extends UnicastRemoteObject implements ChatServerInterface {
 

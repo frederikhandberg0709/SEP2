@@ -5,7 +5,7 @@ import java.rmi.registry.Registry;
 import java.util.logging.Logger;
 
 import via.sep2.server.rmi.ChatServerImpl;
-import via.sep2.server.rmi.ChatServerInterface;
+import via.sep2.shared.interfaces.ChatServerInterface;
 
 public class RMIServerStarter {
 

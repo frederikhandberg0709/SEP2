@@ -1,4 +1,4 @@
-package via.sep2.view.auth;
+package via.sep2.client.view.auth;
 
 import java.io.IOException;
 
@@ -7,8 +7,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import via.sep2.util.SceneManager;
-import via.sep2.viewmodel.auth.LoginViewModel;
+import via.sep2.client.util.SceneManager;
+import via.sep2.client.viewmodel.auth.LoginViewModel;
 
 public class LoginViewController {
 

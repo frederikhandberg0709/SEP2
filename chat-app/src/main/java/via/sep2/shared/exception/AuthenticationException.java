@@ -1,4 +1,4 @@
-package via.sep2.exception;
+package via.sep2.shared.exception;
 
 public class AuthenticationException extends Exception {
 
