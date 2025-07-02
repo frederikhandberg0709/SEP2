@@ -12,6 +12,7 @@ module via.sep2 {
     exports via.sep2.server.rmi to java.rmi;
     exports via.sep2.client.rmi to java.rmi;
     exports via.sep2.shared.dto to java.rmi;
+    exports via.sep2.shared.interfaces to java.rmi;
 
     exports via.sep2.client.connection;
 
