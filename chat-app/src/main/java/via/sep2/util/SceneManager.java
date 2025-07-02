@@ -4,11 +4,17 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import via.sep2.client.factory.ServiceFactory;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class SceneManager {
+
+    private static final Logger logger = Logger.getLogger(SceneManager.class.getName());
+
     private static SceneManager instance;
     private Stage primaryStage;
     private Map<String, Scene> sceneCache;
@@ -16,10 +22,12 @@ public class SceneManager {
 
     public static final String LOGIN_SCENE = "login";
     public static final String CREATE_ACCOUNT_SCENE = "create_account";
+    public static final String MAIN_CHAT_SCENE = "main_chat";
 
     private SceneManager() {
         this.sceneCache = new HashMap<>();
         this.controllerCache = new HashMap<>();
+        logger.info("SceneManager initialized");
     }
 
     public static SceneManager getInstance() {
@@ -31,6 +39,12 @@ public class SceneManager {
 
     public void initialize(Stage primaryStage) {
         this.primaryStage = primaryStage;
+
+        primaryStage.setOnCloseRequest(event -> {
+            cleanup();
+        });
+
+        logger.info("SceneManager initialized with primary stage");
     }
 
     public void showLogin() {
@@ -41,6 +55,32 @@ public class SceneManager {
     public void showCreateAccount() {
         showScene(CREATE_ACCOUNT_SCENE, "/via/sep2/fxml/auth/CreateAccountView.fxml", "Create Account - Chat App",
                 "/via/sep2/css/auth.css");
+    }
+
+    public void showMainChat() {
+        if (isUserAuthenticated()) {
+            showScene(MAIN_CHAT_SCENE, "/via/sep2/fxml/chat/MainChatView.fxml", "Chat - Logged in",
+                    "/via/sep2/css/chat.css");
+        } else {
+            logger.warning("Attempted to show main chat without authentication");
+            showLogin();
+        }
+    }
+
+    private boolean isUserAuthenticated() {
+        try {
+            return ServiceFactory.getInstance()
+                    .getService(via.sep2.client.service.AuthService.class)
+                    .isAuthenticated();
+        } catch (Exception e) {
+            logger.warning("Could not check authentication status: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public void cleanup() {
+        logger.info("Cleaning up SceneManager");
+        clearCache();
     }
 
     private Scene getScene(String sceneId, String fxmlPath, String... stylesheetPaths) throws IOException {
@@ -132,6 +172,7 @@ public class SceneManager {
 
     public void closeApplication() {
         if (primaryStage != null) {
+            cleanup();
             primaryStage.close();
         }
     }
