@@ -29,11 +29,13 @@ module via.sep2 {
 
     exports via.sep2 to javafx.fxml, javafx.graphics;
     exports via.sep2.client.view.auth to javafx.fxml;
+    exports via.sep2.client.view.chat to javafx.fxml;
     exports via.sep2.client.viewmodel.auth to javafx.fxml;
 
     opens via.sep2 to javafx.fxml;
     opens via.sep2.client.view.auth to javafx.fxml;
     opens via.sep2.client.viewmodel.auth to javafx.fxml;
+    opens via.sep2.client.view.chat to javafx.fxml;
 
     opens via.sep2.shared.dto to java.rmi;
 
