@@ -1,20 +1,28 @@
 package via.sep2.viewmodel.auth;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.logging.Logger;
+
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.concurrent.Task;
-import via.sep2.exception.AuthenticationException;
-import via.sep2.model.AuthModel;
-import via.sep2.model.AuthModelManager;
+import via.sep2.client.connection.ConnectionManager;
+import via.sep2.client.event.EventListener;
+import via.sep2.client.event.events.ConnectionLostEvent;
+import via.sep2.client.factory.ServiceFactory;
+import via.sep2.client.service.AuthService;
 import via.sep2.shared.dto.UserDTO;
 
 public class CreateAccountViewModel {
 
-    private final AuthModel authModel;
+    private static final Logger logger = Logger.getLogger(CreateAccountViewModel.class.getName());
+
+    private final AuthService authService;
+    private final ConnectionManager connectionManager;
 
     private final StringProperty username = new SimpleStringProperty("");
     private final StringProperty password = new SimpleStringProperty("");
@@ -32,14 +40,40 @@ public class CreateAccountViewModel {
 
     private final ObjectProperty<UserDTO> createdUser = new SimpleObjectProperty<>();
 
+    private final EventListener<ConnectionLostEvent> connectionLostListener;
+
     public CreateAccountViewModel() {
-        this.authModel = new AuthModelManager();
+        ServiceFactory factory = ServiceFactory.getInstance();
+        this.authService = factory.getService(AuthService.class);
+        this.connectionManager = ConnectionManager.getInstance();
+
+        this.connectionLostListener = this::handleConnectionLost;
+
         setupValidationListeners();
+        setupEventListeners();
+
+        logger.info("CreateAccountViewModel initialized");
     }
 
-    public CreateAccountViewModel(AuthModel authModel) {
-        this.authModel = authModel;
+    public CreateAccountViewModel(AuthService authService) {
+        this.authService = authService;
+        this.connectionManager = ConnectionManager.getInstance();
+
+        this.connectionLostListener = this::handleConnectionLost;
+
         setupValidationListeners();
+        setupEventListeners();
+    }
+
+    private void setupEventListeners() {
+        connectionManager.getEventBus().subscribe(ConnectionLostEvent.class, connectionLostListener);
+    }
+
+    private void handleConnectionLost(ConnectionLostEvent event) {
+        Platform.runLater(() -> {
+            setErrorMessage("Connection lost: " + event.getReason());
+            setIsLoading(false);
+        });
     }
 
     public void createAccount() {
@@ -52,41 +86,28 @@ public class CreateAccountViewModel {
 
         setIsLoading(true);
 
-        Task<UserDTO> createAccountTask = new Task<UserDTO>() {
-            @Override
-            protected UserDTO call() throws Exception {
-                return authModel.createAccount(
-                        getUsername().trim(),
-                        getPassword(),
-                        getFirstName().trim(),
-                        getLastName().trim());
-            }
-
-            @Override
-            protected void succeeded() {
-                UserDTO user = getValue();
-                setCreatedUser(user);
-                setAccountCreated(true);
-                setSuccessMessage("Account created successfully! You can now log in.");
-                clearPasswords();
-                setIsLoading(false);
-            }
-
-            @Override
-            protected void failed() {
-                Throwable exception = getException();
-                if (exception instanceof AuthenticationException) {
-                    setErrorMessage(exception.getMessage());
-                } else {
-                    setErrorMessage("An unexpected error occurred. Please try again.");
-                }
-                setIsLoading(false);
-            }
-        };
-
-        Thread createAccountThread = new Thread(createAccountTask);
-        createAccountThread.setDaemon(true);
-        createAccountThread.start();
+        authService.createAccountAsync(
+                getUsername().trim(),
+                getPassword(),
+                getFirstName().trim(),
+                getLastName().trim())
+                .thenAccept(user -> {
+                    Platform.runLater(() -> {
+                        setCreatedUser(user);
+                        setAccountCreated(true);
+                        setSuccessMessage("Account created successfully! You can now log in.");
+                        clearPasswords();
+                        setIsLoading(false);
+                        logger.info("Account created successfully for user: " + user.getUsername());
+                    });
+                })
+                .exceptionally(throwable -> {
+                    Platform.runLater(() -> {
+                        setErrorMessage(extractErrorMessage(throwable));
+                        setIsLoading(false);
+                    });
+                    return null;
+                });
     }
 
     public void checkUsernameAvailability() {
@@ -107,31 +128,30 @@ public class CreateAccountViewModel {
             return;
         }
 
-        Task<Boolean> checkTask = new Task<Boolean>() {
-            @Override
-            protected Boolean call() throws Exception {
-                return authModel.usernameExists(usernameText);
-            }
+        authService.checkUsernameExistsAsync(usernameText)
+                .thenAccept(exists -> {
+                    Platform.runLater(() -> {
+                        if (exists) {
+                            setUsernameValidation("Username is already taken");
+                        } else {
+                            setUsernameValidation("Username is available ✓");
+                        }
+                    });
+                })
+                .exceptionally(throwable -> {
+                    Platform.runLater(() -> {
+                        setUsernameValidation("Could not check username availability");
+                    });
+                    return null;
+                });
+    }
 
-            @Override
-            protected void succeeded() {
-                Boolean exists = getValue();
-                if (exists) {
-                    setUsernameValidation("Username is already taken");
-                } else {
-                    setUsernameValidation("Username is available");
-                }
-            }
-
-            @Override
-            protected void failed() {
-                setUsernameValidation("Could not check username availability");
-            }
-        };
-
-        Thread checkThread = new Thread(checkTask);
-        checkThread.setDaemon(true);
-        checkThread.start();
+    private String extractErrorMessage(Throwable throwable) {
+        Throwable cause = throwable.getCause();
+        if (cause != null && cause.getMessage() != null) {
+            return cause.getMessage();
+        }
+        return throwable.getMessage() != null ? throwable.getMessage() : "An unexpected error occurred";
     }
 
     public void reset() {
@@ -170,7 +190,7 @@ public class CreateAccountViewModel {
                 !getFirstName().trim().isEmpty() &&
                 !getLastName().trim().isEmpty() &&
                 getPassword().equals(getConfirmPassword()) &&
-                authModel.isValidPassword(getPassword()) &&
+                isValidPassword(getPassword()) &&
                 !isLoading() &&
                 !getUsernameValidation().contains("taken") &&
                 !getUsernameValidation().contains("Could not check");
@@ -180,7 +200,7 @@ public class CreateAccountViewModel {
         passwordProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal.isEmpty()) {
                 setPasswordValidation("");
-            } else if (!authModel.isValidPassword(newVal)) {
+            } else if (!isValidPassword(newVal)) {
                 setPasswordValidation("Password must be at least 8 characters long");
             } else {
                 setPasswordValidation("Password is valid");
@@ -194,7 +214,23 @@ public class CreateAccountViewModel {
 
         usernameProperty().addListener((obs, oldVal, newVal) -> {
             if (!newVal.equals(oldVal)) {
-                checkUsernameAvailability();
+                debounceUsernameCheck();
+            }
+        });
+    }
+
+    private CompletableFuture<Void> usernameCheckFuture;
+
+    private void debounceUsernameCheck() {
+        if (usernameCheckFuture != null && !usernameCheckFuture.isDone()) {
+            usernameCheckFuture.cancel(true);
+        }
+
+        usernameCheckFuture = CompletableFuture.runAsync(() -> {
+            try {
+                Thread.sleep(500);
+                Platform.runLater(this::checkUsernameAvailability);
+            } catch (InterruptedException e) {
             }
         });
     }
@@ -226,7 +262,7 @@ public class CreateAccountViewModel {
 
         if (getPassword().isEmpty()) {
             errors.append("Password is required. ");
-        } else if (!authModel.isValidPassword(getPassword())) {
+        } else if (!isValidPassword(getPassword())) {
             errors.append("Password must be at least 8 characters long. ");
         }
 
@@ -252,6 +288,24 @@ public class CreateAccountViewModel {
         }
 
         return true;
+    }
+
+    private boolean isValidPassword(String password) {
+        return password != null && password.length() >= 8;
+    }
+
+    public void cleanup() {
+        connectionManager.getEventBus().unsubscribe(ConnectionLostEvent.class, connectionLostListener);
+
+        if (usernameCheckFuture != null && !usernameCheckFuture.isDone()) {
+            usernameCheckFuture.cancel(true);
+        }
+
+        logger.info("CreateAccountViewModel cleaned up");
+    }
+
+    public AuthService getAuthService() {
+        return authService;
     }
 
     public StringProperty usernameProperty() {

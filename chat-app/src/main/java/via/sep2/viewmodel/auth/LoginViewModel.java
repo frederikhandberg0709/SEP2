@@ -1,37 +1,88 @@
 package via.sep2.viewmodel.auth;
 
+import java.util.logging.Logger;
+
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.concurrent.Task;
-import via.sep2.exception.AuthenticationException;
-import via.sep2.model.AuthModel;
-import via.sep2.model.AuthModelManager;
+import via.sep2.client.connection.ConnectionManager;
+import via.sep2.client.event.EventListener;
+import via.sep2.client.event.events.ConnectionLostEvent;
+import via.sep2.client.event.events.LoginSuccessEvent;
+import via.sep2.client.factory.ServiceFactory;
+import via.sep2.client.service.AuthService;
 import via.sep2.shared.dto.UserDTO;
 
 public class LoginViewModel {
 
-    private final AuthModel authModel;
+    private static final Logger logger = Logger.getLogger(LoginViewModel.class.getName());
+
+    private final AuthService authService;
+    private final ConnectionManager connectionManager;
 
     private final StringProperty username = new SimpleStringProperty("");
     private final StringProperty password = new SimpleStringProperty("");
     private final StringProperty errorMessage = new SimpleStringProperty("");
     private final BooleanProperty isLoading = new SimpleBooleanProperty(false);
     private final BooleanProperty loginSuccessful = new SimpleBooleanProperty(false);
-
     private final ObjectProperty<UserDTO> currentUser = new SimpleObjectProperty<>();
+    private final StringProperty connectionStatus = new SimpleStringProperty("Disconnected");
+
+    private final EventListener<LoginSuccessEvent> loginSuccessListener;
+    private final EventListener<ConnectionLostEvent> connectionLostListener;
 
     public LoginViewModel() {
-        this.authModel = new AuthModelManager();
-        setupPropertyBindings();
+        ServiceFactory factory = ServiceFactory.getInstance();
+        this.authService = factory.getService(AuthService.class);
+        this.connectionManager = ConnectionManager.getInstance();
+
+        this.loginSuccessListener = this::handleLoginSuccess;
+        this.connectionLostListener = this::handleConnectionLost;
+
+        setupEventListeners();
+        updateConnectionStatus();
+
+        logger.info("LoginViewModel initialized");
     }
 
-    public LoginViewModel(AuthModel authModel) {
-        this.authModel = authModel;
-        setupPropertyBindings();
+    public LoginViewModel(AuthService authService) {
+        this.authService = authService;
+        this.connectionManager = ConnectionManager.getInstance();
+
+        this.loginSuccessListener = this::handleLoginSuccess;
+        this.connectionLostListener = this::handleConnectionLost;
+
+        setupEventListeners();
+        updateConnectionStatus();
+    }
+
+    private void setupEventListeners() {
+        connectionManager.getEventBus().subscribe(LoginSuccessEvent.class, loginSuccessListener);
+
+        connectionManager.getEventBus().subscribe(ConnectionLostEvent.class, connectionLostListener);
+    }
+
+    private void handleLoginSuccess(LoginSuccessEvent event) {
+        Platform.runLater(() -> {
+            setCurrentUser(event.getUser());
+            setLoginSuccessful(true);
+            clearPassword();
+            updateConnectionStatus();
+            logger.info("Login success handled in ViewModel");
+        });
+    }
+
+    private void handleConnectionLost(ConnectionLostEvent event) {
+        Platform.runLater(() -> {
+            setErrorMessage("Connection lost: " + event.getReason());
+            setCurrentUser(null);
+            setLoginSuccessful(false);
+            updateConnectionStatus();
+        });
     }
 
     public void login() {
@@ -44,36 +95,61 @@ public class LoginViewModel {
 
         setIsLoading(true);
 
-        Task<UserDTO> loginTask = new Task<UserDTO>() {
-            @Override
-            protected UserDTO call() throws Exception {
-                return authModel.login(getUsername(), getPassword());
-            }
+        authService.loginAsync(getUsername(), getPassword())
+                .thenAccept(user -> {
+                    Platform.runLater(() -> {
+                        setIsLoading(false);
+                        updateConnectionStatus();
+                    });
+                })
+                .exceptionally(throwable -> {
+                    Platform.runLater(() -> {
+                        setIsLoading(false);
+                        setErrorMessage(extractErrorMessage(throwable));
+                    });
+                    return null;
+                });
+    }
 
-            @Override
-            protected void succeeded() {
-                UserDTO user = getValue();
-                setCurrentUser(user);
-                setLoginSuccessful(true);
-                clearPassword();
-                setIsLoading(false);
-            }
+    public void logout() {
+        authService.logout();
+        Platform.runLater(() -> {
+            setCurrentUser(null);
+            setLoginSuccessful(false);
+            updateConnectionStatus();
+        });
+    }
 
-            @Override
-            protected void failed() {
-                Throwable exception = getException();
-                if (exception instanceof AuthenticationException) {
-                    setErrorMessage(exception.getMessage());
-                } else {
-                    setErrorMessage("An unexpected error occurred. Please try again.");
-                }
-                setIsLoading(false);
-            }
-        };
+    private void updateConnectionStatus() {
+        boolean connected = connectionManager.isConnected();
 
-        Thread loginThread = new Thread(loginTask);
-        loginThread.setDaemon(true);
-        loginThread.start();
+        if (!connected) {
+            setConnectionStatus("Disconnected");
+        } else if (authService.isAuthenticated()) {
+            setConnectionStatus("Authenticated as " + authService.getCurrentUser().getUsername());
+        } else {
+            setConnectionStatus("Connected");
+        }
+    }
+
+    private String extractErrorMessage(Throwable throwable) {
+        Throwable cause = throwable.getCause();
+        if (cause != null && cause.getMessage() != null) {
+            return cause.getMessage();
+        }
+        return throwable.getMessage() != null ? throwable.getMessage() : "An unexpected error occurred";
+    }
+
+    private boolean validateInput() {
+        if (getUsername().trim().isEmpty()) {
+            setErrorMessage("Please enter your username");
+            return false;
+        }
+        if (getPassword().isEmpty()) {
+            setErrorMessage("Please enter your password");
+            return false;
+        }
+        return true;
     }
 
     public void reset() {
@@ -83,6 +159,7 @@ public class LoginViewModel {
         setIsLoading(false);
         setLoginSuccessful(false);
         setCurrentUser(null);
+        updateConnectionStatus();
     }
 
     public void clearPassword() {
@@ -96,24 +173,21 @@ public class LoginViewModel {
     public boolean canLogin() {
         return !getUsername().trim().isEmpty() &&
                 !getPassword().isEmpty() &&
-                !isLoading();
+                !isLoading() &&
+                !authService.isAuthenticated();
     }
 
     private void setupPropertyBindings() {
     }
 
-    private boolean validateInput() {
-        if (getUsername().trim().isEmpty()) {
-            setErrorMessage("Please enter your username");
-            return false;
-        }
+    public void cleanup() {
+        connectionManager.getEventBus().unsubscribe(LoginSuccessEvent.class, loginSuccessListener);
+        connectionManager.getEventBus().unsubscribe(ConnectionLostEvent.class, connectionLostListener);
+        logger.info("LoginViewModel cleaned up");
+    }
 
-        if (getPassword().isEmpty()) {
-            setErrorMessage("Please enter your password");
-            return false;
-        }
-
-        return true;
+    public AuthService getAuthService() {
+        return authService;
     }
 
     public StringProperty usernameProperty() {
@@ -186,5 +260,17 @@ public class LoginViewModel {
 
     public void setCurrentUser(UserDTO currentUser) {
         this.currentUser.set(currentUser);
+    }
+
+    public StringProperty connectionStatusProperty() {
+        return connectionStatus;
+    }
+
+    public String getConnectionStatus() {
+        return connectionStatus.get();
+    }
+
+    public void setConnectionStatus(String connectionStatus) {
+        this.connectionStatus.set(connectionStatus);
     }
 }
