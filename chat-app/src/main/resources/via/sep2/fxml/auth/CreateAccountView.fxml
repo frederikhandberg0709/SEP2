@@ -9,7 +9,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<VBox alignment="CENTER" spacing="30.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="via.sep2.view.auth.CreateAccountViewController">
+<VBox alignment="CENTER" spacing="30.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="via.sep2.client.view.auth.CreateAccountViewController">
    <children>
       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Create Account" textAlignment="CENTER">
          <font>

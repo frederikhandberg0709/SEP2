@@ -15,6 +15,11 @@ run:
 	@echo "$(COLOR_GREEN)Running $(PROJECT_NAME)...$(COLOR_RESET)"
 	@mvn javafx:run
 
+.PHONY: run-server
+run-server:
+	@echo "$(COLOR_GREEN)Starting RMI Chat Server...$(COLOR_RESET)"
+	@mvn exec:java -Dexec.mainClass="via.sep2.server.RMIServerStarter" -Dexec.args=""
+
 PHONY: clean
 clean:
 	@echo "$(COLOR_GREEN)Cleaning project...$(COLOR_RESET)"
