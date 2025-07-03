@@ -18,6 +18,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCode;
@@ -143,6 +144,7 @@ public class MainChatViewController implements Initializable {
     }
 
     private void setupUI() {
+        setupDataBinding();
         setupChatList();
         setupMessageInput();
         setupFilters();
@@ -150,6 +152,17 @@ public class MainChatViewController implements Initializable {
 
         // Initially show empty state
         showEmptyState();
+    }
+
+    private void setupDataBinding() {
+        chatHeader.managedProperty().bind(chatHeader.visibleProperty());
+        messagesScrollPane
+            .managedProperty()
+            .bind(messagesScrollPane.visibleProperty());
+        messageInputArea
+            .managedProperty()
+            .bind(messageInputArea.visibleProperty());
+        emptyStateArea.managedProperty().bind(emptyStateArea.visibleProperty());
     }
 
     private void setupChatList() {
@@ -303,10 +316,8 @@ public class MainChatViewController implements Initializable {
             chatHeaderStatus.setText("Group chat");
         }
 
-        // Show chat interface
         showChatInterface();
 
-        // Load messages for selected chat
         loadMessagesForChat(chatItem);
     }
 
@@ -352,7 +363,6 @@ public class MainChatViewController implements Initializable {
             messagesContainer.getChildren().add(messageLabel);
         }
 
-        // Scroll to bottom
         Platform.runLater(() -> {
             messagesScrollPane.setVvalue(1.0);
         });

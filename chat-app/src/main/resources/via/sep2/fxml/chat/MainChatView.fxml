@@ -8,7 +8,6 @@
     xmlns:fx="http://javafx.com/fxml"
     fx:controller="via.sep2.client.view.chat.MainChatViewController"
 >
-
     <!-- Sidebar -->
     <left>
         <VBox prefWidth="360.0" styleClass="sidebar">
@@ -119,6 +118,7 @@
                 spacing="12.0"
                 styleClass="chat-header"
                 visible="false"
+                managed="false"
             >
                 <padding>
                     <Insets bottom="16.0" left="20.0" right="20.0" top="16.0" />
@@ -154,6 +154,7 @@
                 VBox.vgrow="ALWAYS"
                 styleClass="messages-scroll"
                 visible="false"
+                managed="false"
             >
                 <VBox
                     fx:id="messagesContainer"
@@ -178,6 +179,7 @@
                 spacing="12.0"
                 styleClass="message-input-area"
                 visible="false"
+                managed="false"
             >
                 <padding>
                     <Insets bottom="16.0" left="20.0" right="20.0" top="16.0" />
