@@ -441,7 +441,6 @@ public class MainChatViewController implements Initializable {
         });
     }
 
-    // Event handlers
     @FXML
     private void onLogout() {
         logger.info("User logging out");
