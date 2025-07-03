@@ -8,7 +8,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
-
 import via.sep2.shared.dto.ChatMemberDTO;
 import via.sep2.shared.dto.ChatRoomDTO;
 import via.sep2.shared.dto.DirectChatDTO;
@@ -17,9 +16,13 @@ import via.sep2.shared.dto.UserDTO;
 import via.sep2.shared.interfaces.ChatClientCallbackInterface;
 import via.sep2.shared.interfaces.ChatServerInterface;
 
-public class ChatClientImpl extends UnicastRemoteObject implements ChatClientCallbackInterface {
+public class ChatClientImpl
+    extends UnicastRemoteObject
+    implements ChatClientCallbackInterface {
 
-    private static final Logger logger = Logger.getLogger(ChatClientImpl.class.getName());
+    private static final Logger logger = Logger.getLogger(
+        ChatClientImpl.class.getName()
+    );
     private static final String SERVER_NAME = "ChatServer";
     private static final String SERVER_HOST = "localhost";
     private static final int RMI_PORT = 1099;
@@ -28,7 +31,8 @@ public class ChatClientImpl extends UnicastRemoteObject implements ChatClientCal
     private UserDTO currentUser;
     private boolean connected = false;
 
-    private final List<ChatEventListener> eventListeners = new CopyOnWriteArrayList<>();
+    private final List<ChatEventListener> eventListeners =
+        new CopyOnWriteArrayList<>();
 
     public ChatClientImpl() throws RemoteException {
         super();
@@ -61,7 +65,8 @@ public class ChatClientImpl extends UnicastRemoteObject implements ChatClientCal
         return connected && server != null;
     }
 
-    public UserDTO login(String username, String password) throws RemoteException {
+    public UserDTO login(String username, String password)
+        throws RemoteException {
         if (!connected) {
             throw new IllegalStateException("Not connected to server");
         }
@@ -73,8 +78,12 @@ public class ChatClientImpl extends UnicastRemoteObject implements ChatClientCal
         return currentUser;
     }
 
-    public UserDTO createAccount(String username, String password, String firstName, String lastName)
-            throws RemoteException {
+    public UserDTO createAccount(
+        String username,
+        String password,
+        String firstName,
+        String lastName
+    ) throws RemoteException {
         if (!connected) {
             throw new IllegalStateException("Not connected to server");
         }
@@ -100,6 +109,15 @@ public class ChatClientImpl extends UnicastRemoteObject implements ChatClientCal
         logger.info("Logged out successfully");
     }
 
+    public List<UserDTO> searchUsers(String searchTerm, int limit)
+        throws RemoteException {
+        if (!connected) {
+            throw new IllegalStateException("Not connected to server");
+        }
+
+        return server.searchUsers(searchTerm, limit);
+    }
+
     public void registerForChat(String username) throws RemoteException {
         if (!connected) {
             throw new IllegalStateException("Not connected to server");
@@ -109,7 +127,8 @@ public class ChatClientImpl extends UnicastRemoteObject implements ChatClientCal
         logger.info("Registered for chat notifications: " + username);
     }
 
-    public DirectChatDTO createDirectChat(String otherUser) throws RemoteException {
+    public DirectChatDTO createDirectChat(String otherUser)
+        throws RemoteException {
         if (!connected || currentUser == null) {
             throw new IllegalStateException("Not connected or not logged in");
         }
@@ -117,7 +136,8 @@ public class ChatClientImpl extends UnicastRemoteObject implements ChatClientCal
         return server.createDirectChat(currentUser.getUsername(), otherUser);
     }
 
-    public DirectChatDTO getDirectChat(String otherUser) throws RemoteException {
+    public DirectChatDTO getDirectChat(String otherUser)
+        throws RemoteException {
         if (!connected || currentUser == null) {
             throw new IllegalStateException("Not connected or not logged in");
         }
@@ -133,13 +153,23 @@ public class ChatClientImpl extends UnicastRemoteObject implements ChatClientCal
         return server.getUserDirectChats(currentUser.getUsername());
     }
 
-    public ChatRoomDTO createGroupChat(String roomName, String description, boolean isPrivate, int maxMembers)
-            throws RemoteException {
+    public ChatRoomDTO createGroupChat(
+        String roomName,
+        String description,
+        boolean isPrivate,
+        int maxMembers
+    ) throws RemoteException {
         if (!connected || currentUser == null) {
             throw new IllegalStateException("Not connected or not logged in");
         }
 
-        return server.createGroupChat(roomName, currentUser.getUsername(), description, isPrivate, maxMembers);
+        return server.createGroupChat(
+            roomName,
+            currentUser.getUsername(),
+            description,
+            isPrivate,
+            maxMembers
+        );
     }
 
     public List<ChatRoomDTO> getPublicGroupChats() throws RemoteException {
@@ -174,7 +204,8 @@ public class ChatClientImpl extends UnicastRemoteObject implements ChatClientCal
         server.leaveGroupChat(currentUser.getUsername(), roomId);
     }
 
-    public List<ChatMemberDTO> getGroupChatMembers(int roomId) throws RemoteException {
+    public List<ChatMemberDTO> getGroupChatMembers(int roomId)
+        throws RemoteException {
         if (!connected) {
             throw new IllegalStateException("Not connected to server");
         }
@@ -182,7 +213,8 @@ public class ChatClientImpl extends UnicastRemoteObject implements ChatClientCal
         return server.getGroupChatMembers(roomId);
     }
 
-    public void sendDirectMessage(int directChatId, String content) throws RemoteException {
+    public void sendDirectMessage(int directChatId, String content)
+        throws RemoteException {
         if (!connected || currentUser == null) {
             throw new IllegalStateException("Not connected or not logged in");
         }
@@ -196,7 +228,8 @@ public class ChatClientImpl extends UnicastRemoteObject implements ChatClientCal
         server.sendMessage(message);
     }
 
-    public void sendGroupMessage(int roomId, String content) throws RemoteException {
+    public void sendGroupMessage(int roomId, String content)
+        throws RemoteException {
         if (!connected || currentUser == null) {
             throw new IllegalStateException("Not connected or not logged in");
         }
@@ -210,7 +243,8 @@ public class ChatClientImpl extends UnicastRemoteObject implements ChatClientCal
         server.sendMessage(message);
     }
 
-    public List<MessageDTO> getDirectChatMessages(int directChatId, int limit) throws RemoteException {
+    public List<MessageDTO> getDirectChatMessages(int directChatId, int limit)
+        throws RemoteException {
         if (!connected) {
             throw new IllegalStateException("Not connected to server");
         }
@@ -218,7 +252,8 @@ public class ChatClientImpl extends UnicastRemoteObject implements ChatClientCal
         return server.getDirectChatMessages(directChatId, limit);
     }
 
-    public List<MessageDTO> getGroupChatMessages(int roomId, int limit) throws RemoteException {
+    public List<MessageDTO> getGroupChatMessages(int roomId, int limit)
+        throws RemoteException {
         if (!connected) {
             throw new IllegalStateException("Not connected to server");
         }
@@ -226,7 +261,8 @@ public class ChatClientImpl extends UnicastRemoteObject implements ChatClientCal
         return server.getGroupChatMessages(roomId, limit);
     }
 
-    public void promoteToAdmin(String username, int roomId) throws RemoteException {
+    public void promoteToAdmin(String username, int roomId)
+        throws RemoteException {
         if (!connected || currentUser == null) {
             throw new IllegalStateException("Not connected or not logged in");
         }
@@ -234,7 +270,8 @@ public class ChatClientImpl extends UnicastRemoteObject implements ChatClientCal
         server.promoteToAdmin(currentUser.getUsername(), username, roomId);
     }
 
-    public void demoteFromAdmin(String username, int roomId) throws RemoteException {
+    public void demoteFromAdmin(String username, int roomId)
+        throws RemoteException {
         if (!connected || currentUser == null) {
             throw new IllegalStateException("Not connected or not logged in");
         }
@@ -249,39 +286,67 @@ public class ChatClientImpl extends UnicastRemoteObject implements ChatClientCal
     }
 
     @Override
-    public void onDirectChatCreated(DirectChatDTO directChat) throws RemoteException {
+    public void onDirectChatCreated(DirectChatDTO directChat)
+        throws RemoteException {
         logger.info("Direct chat created: " + directChat.getId());
         notifyListeners(listener -> listener.onDirectChatCreated(directChat));
     }
 
     @Override
-    public void onGroupChatCreated(ChatRoomDTO groupChat) throws RemoteException {
+    public void onGroupChatCreated(ChatRoomDTO groupChat)
+        throws RemoteException {
         logger.info("Group chat created: " + groupChat.getName());
         notifyListeners(listener -> listener.onGroupChatCreated(groupChat));
     }
 
     @Override
-    public void onUserJoinedGroup(int roomId, UserDTO user, String invitedBy) throws RemoteException {
+    public void onUserJoinedGroup(int roomId, UserDTO user, String invitedBy)
+        throws RemoteException {
         logger.info("User " + user.getUsername() + " joined group " + roomId);
-        notifyListeners(listener -> listener.onUserJoinedGroup(roomId, user, invitedBy));
+        notifyListeners(listener ->
+            listener.onUserJoinedGroup(roomId, user, invitedBy)
+        );
     }
 
     @Override
-    public void onUserLeftGroup(int roomId, UserDTO user, boolean wasRemoved, String removedBy) throws RemoteException {
+    public void onUserLeftGroup(
+        int roomId,
+        UserDTO user,
+        boolean wasRemoved,
+        String removedBy
+    ) throws RemoteException {
         logger.info("User " + user.getUsername() + " left group " + roomId);
-        notifyListeners(listener -> listener.onUserLeftGroup(roomId, user, wasRemoved, removedBy));
+        notifyListeners(listener ->
+            listener.onUserLeftGroup(roomId, user, wasRemoved, removedBy)
+        );
     }
 
     @Override
-    public void onPromotedToAdmin(int roomId, UserDTO user, String promotedBy) throws RemoteException {
-        logger.info("User " + user.getUsername() + " promoted to admin in group " + roomId);
-        notifyListeners(listener -> listener.onPromotedToAdmin(roomId, user, promotedBy));
+    public void onPromotedToAdmin(int roomId, UserDTO user, String promotedBy)
+        throws RemoteException {
+        logger.info(
+            "User " +
+            user.getUsername() +
+            " promoted to admin in group " +
+            roomId
+        );
+        notifyListeners(listener ->
+            listener.onPromotedToAdmin(roomId, user, promotedBy)
+        );
     }
 
     @Override
-    public void onDemotedFromAdmin(int roomId, UserDTO user, String demotedBy) throws RemoteException {
-        logger.info("User " + user.getUsername() + " demoted from admin in group " + roomId);
-        notifyListeners(listener -> listener.onDemotedFromAdmin(roomId, user, demotedBy));
+    public void onDemotedFromAdmin(int roomId, UserDTO user, String demotedBy)
+        throws RemoteException {
+        logger.info(
+            "User " +
+            user.getUsername() +
+            " demoted from admin in group " +
+            roomId
+        );
+        notifyListeners(listener ->
+            listener.onDemotedFromAdmin(roomId, user, demotedBy)
+        );
     }
 
     @Override

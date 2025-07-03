@@ -151,7 +151,8 @@ public class SceneManager {
                 MAIN_CHAT_SCENE,
                 "/via/sep2/fxml/chat/MainChatView.fxml",
                 "Chat - Logged in",
-                "/via/sep2/css/chat.css"
+                "/via/sep2/css/chat.css",
+                "/via/sep2/css/user-search.css"
             );
 
             primaryStage.setMinWidth(800);

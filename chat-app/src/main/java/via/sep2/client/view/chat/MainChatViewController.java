@@ -1,14 +1,9 @@
 package via.sep2.client.view.chat;
 
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -18,7 +13,6 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCode;
@@ -26,12 +20,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
-import via.sep2.client.factory.ServiceFactory;
-import via.sep2.client.service.AuthService;
-import via.sep2.client.service.ChatService;
 import via.sep2.client.util.SceneManager;
-import via.sep2.shared.dto.ChatRoomDTO;
-import via.sep2.shared.dto.DirectChatDTO;
+import via.sep2.client.viewmodel.chat.MainChatViewModel;
 import via.sep2.shared.dto.MessageDTO;
 import via.sep2.shared.dto.UserDTO;
 
@@ -69,6 +59,12 @@ public class MainChatViewController implements Initializable {
     @FXML
     private ListView<ChatItemData> chatListView;
 
+    @FXML
+    private VBox userSearchContainer;
+
+    @FXML
+    private ListView<UserDTO> userSearchListView;
+
     // Main chat
     @FXML
     private VBox chatMainArea;
@@ -103,58 +99,38 @@ public class MainChatViewController implements Initializable {
     @FXML
     private VBox emptyStateArea;
 
-    private AuthService authService;
-    private ChatService chatService;
-
-    private ObservableList<ChatItemData> allChats;
-    private FilteredList<ChatItemData> filteredChats;
-    private ChatItemData selectedChat;
-    private ObservableList<MessageDTO> currentMessages;
-
-    private enum ChatFilter {
-        ALL,
-        DIRECT,
-        GROUP,
-    }
+    private MainChatViewModel viewModel;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        logger.info("Initializing MainChatViewController");
+        logger.info("Initializing MainChatViewController with ViewModel");
 
-        initializeServices();
-        initializeData();
-        setupUI();
-        loadUserInfo();
-        loadChats();
-    }
-
-    private void initializeServices() {
-        this.authService = ServiceFactory.getInstance().getService(
-            AuthService.class
-        );
-        this.chatService = ServiceFactory.getInstance().getService(
-            ChatService.class
-        );
-    }
-
-    private void initializeData() {
-        this.allChats = FXCollections.observableArrayList();
-        this.filteredChats = new FilteredList<>(allChats);
-        this.currentMessages = FXCollections.observableArrayList();
-    }
-
-    private void setupUI() {
+        initializeViewModel();
         setupDataBinding();
-        setupChatList();
-        setupMessageInput();
-        setupFilters();
-        setupSearch();
+        setupUI();
+        setupEventHandlers();
 
-        // Initially show empty state
-        showEmptyState();
+        loadUserInfo();
+        viewModel.loadChats();
+    }
+
+    private void initializeViewModel() {
+        this.viewModel = new MainChatViewModel();
     }
 
     private void setupDataBinding() {
+        searchField
+            .textProperty()
+            .bindBidirectional(viewModel.searchTextProperty());
+
+        messageInput
+            .textProperty()
+            .bindBidirectional(viewModel.messageInputProperty());
+
+        chatListView.setItems(viewModel.getFilteredChats());
+
+        setupUserSearchList();
+
         chatHeader.managedProperty().bind(chatHeader.visibleProperty());
         messagesScrollPane
             .managedProperty()
@@ -163,10 +139,128 @@ public class MainChatViewController implements Initializable {
             .managedProperty()
             .bind(messageInputArea.visibleProperty());
         emptyStateArea.managedProperty().bind(emptyStateArea.visibleProperty());
+
+        showEmptyState();
+    }
+
+    private void setupUserSearchList() {
+        userSearchListView.setItems(viewModel.getSearchedUsers());
+        userSearchListView.setCellFactory(listView -> new UserSearchCell());
+
+        userSearchListView.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                UserDTO selectedUser = userSearchListView
+                    .getSelectionModel()
+                    .getSelectedItem();
+                if (selectedUser != null) {
+                    logger.info(
+                        "Starting chat with user: " + selectedUser.getUsername()
+                    );
+                    viewModel.startDirectChatWithUser(selectedUser);
+                }
+            }
+        });
+
+        logger.info(
+            "Initial userSearchContainer visibility: " +
+            userSearchContainer.isVisible()
+        );
+        logger.info(
+            "Initial userSearchContainer managed: " +
+            userSearchContainer.isManaged()
+        );
+        logger.info(
+            "Initial chatListView visibility: " + chatListView.isVisible()
+        );
+
+        viewModel
+            .showUserSearchResultsProperty()
+            .addListener((obs, oldVal, newVal) -> {
+                logger.info(
+                    "User search results visibility changed from " +
+                    oldVal +
+                    " to " +
+                    newVal
+                );
+                logger.info(
+                    "Setting userSearchContainer visible: " +
+                    newVal +
+                    ", managed: " +
+                    newVal
+                );
+                logger.info(
+                    "Setting chatListView visible: " +
+                    !newVal +
+                    ", managed: " +
+                    !newVal
+                );
+
+                userSearchContainer.setVisible(newVal);
+                userSearchContainer.setManaged(newVal);
+                chatListView.setVisible(!newVal);
+                chatListView.setManaged(!newVal);
+
+                Platform.runLater(() -> {
+                    logger.info(
+                        "After change - userSearchContainer visible: " +
+                        userSearchContainer.isVisible() +
+                        ", managed: " +
+                        userSearchContainer.isManaged()
+                    );
+                    logger.info(
+                        "After change - chatListView visible: " +
+                        chatListView.isVisible() +
+                        ", managed: " +
+                        chatListView.isManaged()
+                    );
+                });
+            });
+
+        viewModel
+            .getSearchedUsers()
+            .addListener(
+                (javafx.collections.ListChangeListener<UserDTO>) change -> {
+                    while (change.next()) {
+                        if (change.wasAdded()) {
+                            logger.info(
+                                "Added " +
+                                change.getAddedSubList().size() +
+                                " users to search results"
+                            );
+                            for (UserDTO user : change.getAddedSubList()) {
+                                logger.info(
+                                    "User: " +
+                                    user.getUsername() +
+                                    " (" +
+                                    user.getFirstName() +
+                                    " " +
+                                    user.getLastName() +
+                                    ")"
+                                );
+                            }
+
+                            logger.info(
+                                "showUserSearchResults property value: " +
+                                viewModel.showUserSearchResultsProperty().get()
+                            );
+                        }
+                    }
+                }
+            );
+
+        logger.info(
+            "Initial showUserSearchResults value: " +
+            viewModel.showUserSearchResultsProperty().get()
+        );
+    }
+
+    private void setupUI() {
+        setupChatList();
+        setupMessageDisplay();
+        setupFilters();
     }
 
     private void setupChatList() {
-        chatListView.setItems(filteredChats);
         chatListView.setCellFactory(
             new Callback<ListView<ChatItemData>, ListCell<ChatItemData>>() {
                 @Override
@@ -183,35 +277,79 @@ public class MainChatViewController implements Initializable {
             .selectedItemProperty()
             .addListener((obs, oldSelection, newSelection) -> {
                 if (newSelection != null) {
-                    selectChat(newSelection);
+                    viewModel.selectChat(newSelection);
+                    updateChatHeader(newSelection);
+                    showChatInterface();
                 }
             });
     }
 
-    private void setupMessageInput() {
-        messageInput.setOnAction(e -> onSendMessage());
+    private void setupMessageDisplay() {
+        viewModel
+            .getCurrentMessages()
+            .addListener(
+                (javafx.collections.ListChangeListener<MessageDTO>) change -> {
+                    while (change.next()) {
+                        if (change.wasAdded()) {
+                            for (MessageDTO message : change.getAddedSubList()) {
+                                addMessageToUI(message);
+                            }
+                        } else if (change.wasRemoved()) {
+                            // handle message removal if needed
+                        }
+                    }
+
+                    Platform.runLater(() -> messagesScrollPane.setVvalue(1.0));
+                }
+            );
     }
 
     private void setupFilters() {
         chatFilterGroup
             .selectedToggleProperty()
             .addListener((obs, oldToggle, newToggle) -> {
-                if (newToggle != null) {
-                    updateChatFilter();
+                if (newToggle == allChatsFilter) {
+                    viewModel.setFilter(MainChatViewModel.ChatFilter.ALL);
+                } else if (newToggle == directChatsFilter) {
+                    viewModel.setFilter(MainChatViewModel.ChatFilter.DIRECT);
+                } else if (newToggle == groupChatsFilter) {
+                    viewModel.setFilter(MainChatViewModel.ChatFilter.GROUP);
                 }
             });
     }
 
-    private void setupSearch() {
-        searchField
-            .textProperty()
-            .addListener((obs, oldText, newText) -> {
-                updateChatFilter();
+    private void setupEventHandlers() {
+        messageInput.setOnAction(e -> viewModel.sendMessage());
+
+        viewModel
+            .errorMessageProperty()
+            .addListener((obs, oldVal, newVal) -> {
+                if (newVal != null && !newVal.isEmpty()) {
+                    showErrorAlert(newVal);
+                }
+            });
+
+        chatListView.setOnMouseClicked(event -> {
+            if (viewModel.showUserSearchResultsProperty().get()) {
+                viewModel.clearSearch();
+            }
+        });
+
+        viewModel
+            .searchTextProperty()
+            .addListener((obs, oldVal, newVal) -> {
+                logger.info(
+                    "Search text changed from '" +
+                    oldVal +
+                    "' to '" +
+                    newVal +
+                    "'"
+                );
             });
     }
 
     private void loadUserInfo() {
-        UserDTO currentUser = authService.getCurrentUser();
+        UserDTO currentUser = viewModel.getCurrentUser();
         if (currentUser != null) {
             userNameLabel.setText(
                 currentUser.getFirstName() + " " + currentUser.getLastName()
@@ -225,88 +363,7 @@ public class MainChatViewController implements Initializable {
         }
     }
 
-    private void loadChats() {
-        Platform.runLater(() -> {
-            allChats.clear();
-
-            // Load direct chats
-            chatService
-                .getDirectChatsAsync()
-                .thenAccept(directChats ->
-                    Platform.runLater(() -> {
-                        for (DirectChatDTO directChat : directChats) {
-                            ChatItemData chatItem =
-                                createChatItemFromDirectChat(directChat);
-                            allChats.add(chatItem);
-                        }
-                    })
-                )
-                .exceptionally(throwable -> {
-                    logger.warning(
-                        "Failed to load direct chats: " + throwable.getMessage()
-                    );
-                    return null;
-                });
-
-            // Load group chats
-            chatService
-                .getMyGroupChatsAsync()
-                .thenAccept(groupChats ->
-                    Platform.runLater(() -> {
-                        for (ChatRoomDTO groupChat : groupChats) {
-                            ChatItemData chatItem = createChatItemFromGroupChat(
-                                groupChat
-                            );
-                            allChats.add(chatItem);
-                        }
-                    })
-                )
-                .exceptionally(throwable -> {
-                    logger.warning(
-                        "Failed to load group chats: " + throwable.getMessage()
-                    );
-                    return null;
-                });
-        });
-    }
-
-    private ChatItemData createChatItemFromDirectChat(
-        DirectChatDTO directChat
-    ) {
-        String currentUsername = authService.getCurrentUser().getUsername();
-        String otherUser = directChat.getOtherUser(currentUsername);
-
-        return new ChatItemData(
-            directChat.getId(),
-            otherUser,
-            "Click to start chatting...",
-            getInitials(otherUser, ""),
-            formatTime(directChat.getLastMessageTimestamp()),
-            ChatItemData.ChatType.DIRECT,
-            false,
-            0
-        );
-    }
-
-    private ChatItemData createChatItemFromGroupChat(ChatRoomDTO groupChat) {
-        return new ChatItemData(
-            groupChat.getId(),
-            groupChat.getName(),
-            groupChat.getDescription() != null
-                ? groupChat.getDescription()
-                : "Group chat",
-            getInitials(groupChat.getName(), ""),
-            formatTime(groupChat.getCreatedTimestamp()),
-            ChatItemData.ChatType.GROUP,
-            false,
-            0
-        );
-    }
-
-    private void selectChat(ChatItemData chatItem) {
-        this.selectedChat = chatItem;
-
-        // Update chat header
+    private void updateChatHeader(ChatItemData chatItem) {
         chatHeaderName.setText(chatItem.getName());
         chatHeaderAvatar.setText(chatItem.getAvatarText());
 
@@ -315,70 +372,28 @@ public class MainChatViewController implements Initializable {
         } else {
             chatHeaderStatus.setText("Group chat");
         }
-
-        showChatInterface();
-
-        loadMessagesForChat(chatItem);
     }
 
-    private void loadMessagesForChat(ChatItemData chatItem) {
-        currentMessages.clear();
-
-        CompletableFuture<List<MessageDTO>> messagesFuture;
-
-        if (chatItem.getType() == ChatItemData.ChatType.DIRECT) {
-            messagesFuture = chatService.getDirectChatMessagesAsync(
-                chatItem.getId(),
-                50
-            );
-        } else {
-            messagesFuture = chatService.getGroupChatMessagesAsync(
-                chatItem.getId(),
-                50
-            );
-        }
-
-        messagesFuture
-            .thenAccept(messages ->
-                Platform.runLater(() -> {
-                    currentMessages.addAll(messages);
-                    displayMessages();
-                })
-            )
-            .exceptionally(throwable -> {
-                logger.warning(
-                    "Failed to load messages: " + throwable.getMessage()
-                );
-                return null;
-            });
+    private void addMessageToUI(MessageDTO message) {
+        Label messageLabel = createMessageLabel(message);
+        messagesContainer.getChildren().add(messageLabel);
     }
 
-    private void displayMessages() {
-        messagesContainer.getChildren().clear();
-
-        String currentUsername = authService.getCurrentUser().getUsername();
-
-        for (MessageDTO message : currentMessages) {
-            Label messageLabel = createMessageLabel(message, currentUsername);
-            messagesContainer.getChildren().add(messageLabel);
-        }
-
-        Platform.runLater(() -> {
-            messagesScrollPane.setVvalue(1.0);
-        });
-    }
-
-    private Label createMessageLabel(
-        MessageDTO message,
-        String currentUsername
-    ) {
+    private Label createMessageLabel(MessageDTO message) {
         Label messageLabel = new Label();
+        UserDTO currentUser = viewModel.getCurrentUser();
 
         boolean isOwnMessage = message
             .getSenderUsername()
-            .equals(currentUsername);
-        String displayText =
-            message.getSenderUsername() + ": " + message.getContent();
+            .equals(currentUser.getUsername());
+        String displayText;
+
+        if (isOwnMessage) {
+            displayText = message.getContent();
+        } else {
+            displayText =
+                message.getSenderUsername() + ": " + message.getContent();
+        }
 
         messageLabel.setText(displayText);
         messageLabel.setWrapText(true);
@@ -393,52 +408,13 @@ public class MainChatViewController implements Initializable {
         return messageLabel;
     }
 
-    private void updateChatFilter() {
-        String searchText = searchField.getText().toLowerCase().trim();
-        Toggle selectedToggle = chatFilterGroup.getSelectedToggle();
-
-        ChatFilter filter = ChatFilter.ALL;
-        if (selectedToggle == directChatsFilter) {
-            filter = ChatFilter.DIRECT;
-        } else if (selectedToggle == groupChatsFilter) {
-            filter = ChatFilter.GROUP;
-        }
-
-        final ChatFilter finalFilter = filter;
-
-        filteredChats.setPredicate(chatItem -> {
-            // Apply search filter
-            boolean matchesSearch =
-                searchText.isEmpty() ||
-                chatItem.getName().toLowerCase().contains(searchText) ||
-                chatItem.getPreview().toLowerCase().contains(searchText);
-
-            // Apply type filter
-            boolean matchesType = true;
-            switch (finalFilter) {
-                case DIRECT:
-                    matchesType =
-                        chatItem.getType() == ChatItemData.ChatType.DIRECT;
-                    break;
-                case GROUP:
-                    matchesType =
-                        chatItem.getType() == ChatItemData.ChatType.GROUP;
-                    break;
-                case ALL:
-                default:
-                    matchesType = true;
-                    break;
-            }
-
-            return matchesSearch && matchesType;
-        });
-    }
-
     private void showEmptyState() {
         chatHeader.setVisible(false);
         messagesScrollPane.setVisible(false);
         messageInputArea.setVisible(false);
         emptyStateArea.setVisible(true);
+
+        messagesContainer.getChildren().clear();
     }
 
     private void showChatInterface() {
@@ -446,75 +422,52 @@ public class MainChatViewController implements Initializable {
         chatHeader.setVisible(true);
         messagesScrollPane.setVisible(true);
         messageInputArea.setVisible(true);
+
+        messagesContainer.getChildren().clear();
+        for (MessageDTO message : viewModel.getCurrentMessages()) {
+            addMessageToUI(message);
+        }
+
+        Platform.runLater(() -> messageInput.requestFocus());
+    }
+
+    private void showErrorAlert(String errorMessage) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("An error occurred");
+            alert.setContentText(errorMessage);
+            alert.showAndWait();
+        });
     }
 
     // Event handlers
     @FXML
     private void onLogout() {
         logger.info("User logging out");
-        authService.logout();
+        viewModel.cleanup();
         SceneManager.getInstance().showLogin();
     }
 
     @FXML
     private void onFilterChanged() {
-        updateChatFilter();
+        // Filter change is handled by setupFilters()
     }
 
     @FXML
     private void onSearchChanged() {
-        updateChatFilter();
+        // Search change is handled by data binding
     }
 
     @FXML
     private void onSendMessage() {
-        String content = messageInput.getText().trim();
-        if (content.isEmpty() || selectedChat == null) {
-            return;
-        }
-
-        CompletableFuture<Void> sendFuture;
-
-        if (selectedChat.getType() == ChatItemData.ChatType.DIRECT) {
-            sendFuture = chatService.sendDirectMessageAsync(
-                selectedChat.getId(),
-                content
-            );
-        } else {
-            sendFuture = chatService.sendGroupMessageAsync(
-                selectedChat.getId(),
-                content
-            );
-        }
-
-        sendFuture
-            .thenRun(() ->
-                Platform.runLater(() -> {
-                    messageInput.clear();
-                    // Refresh messages
-                    loadMessagesForChat(selectedChat);
-                })
-            )
-            .exceptionally(throwable -> {
-                logger.warning(
-                    "Failed to send message: " + throwable.getMessage()
-                );
-                Platform.runLater(() -> {
-                    // Show error to user
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Send Message Failed");
-                    alert.setHeaderText("Could not send message");
-                    alert.setContentText(throwable.getMessage());
-                    alert.showAndWait();
-                });
-                return null;
-            });
+        viewModel.sendMessage();
     }
 
     @FXML
     private void onMessageInputKeyPressed(KeyEvent event) {
         if (event.getCode() == KeyCode.ENTER && !event.isShiftDown()) {
-            onSendMessage();
+            viewModel.sendMessage();
             event.consume();
         }
     }
@@ -531,23 +484,7 @@ public class MainChatViewController implements Initializable {
         return initials.toString().toUpperCase();
     }
 
-    private String formatTime(long timestamp) {
-        if (timestamp == 0) return "";
-
-        long now = System.currentTimeMillis();
-        long diff = now - timestamp;
-
-        if (diff < 60000) {
-            // Less than 1 minute
-            return "Just now";
-        } else if (diff < 3600000) {
-            // Less than 1 hour
-            return (diff / 60000) + "m";
-        } else if (diff < 86400000) {
-            // Less than 1 day
-            return (diff / 3600000) + "h";
-        } else {
-            return (diff / 86400000) + "d";
-        }
+    public MainChatViewModel getViewModel() {
+        return viewModel;
     }
 }

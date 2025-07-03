@@ -1,0 +1,80 @@
+.search-section-header {
+    -fx-text-fill: #65676b;
+    -fx-font-weight: bold;
+}
+
+.user-search-list {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.user-search-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 8 12 8 12;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+
+.user-search-list .list-cell:hover {
+    -fx-background-color: #f2f3f5;
+}
+
+.user-search-list .list-cell:selected {
+    -fx-background-color: #e7f3ff;
+}
+
+.user-search-list .list-cell .label {
+    -fx-text-fill: #1c1e21;
+    -fx-font-size: 14;
+}
+
+.search-hint {
+    -fx-text-fill: #65676b;
+    -fx-font-style: italic;
+}
+
+/* Enhanced search input */
+.search-input:focused {
+    -fx-background-color: #e4e6ea;
+    -fx-border-color: #0084ff;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(0, 132, 255, 0.3), 4, 0, 0, 0);
+}
+
+/* User item styling in search results */
+.user-search-item {
+    -fx-spacing: 8;
+    -fx-alignment: center-left;
+    -fx-padding: 8 12 8 12;
+}
+
+.user-avatar-small {
+    -fx-background-color: linear-gradient(to bottom right, #42b883, #369870);
+    -fx-background-radius: 16;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 12;
+    -fx-alignment: center;
+    -fx-min-width: 32;
+    -fx-min-height: 32;
+    -fx-max-width: 32;
+    -fx-max-height: 32;
+}
+
+.user-info {
+    -fx-spacing: 2;
+}
+
+.user-display-name {
+    -fx-font-weight: bold;
+    -fx-font-size: 14;
+    -fx-text-fill: #1c1e21;
+}
+
+.user-username {
+    -fx-font-size: 12;
+    -fx-text-fill: #65676b;
+}
