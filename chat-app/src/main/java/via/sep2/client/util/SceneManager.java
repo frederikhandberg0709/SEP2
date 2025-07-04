@@ -136,13 +136,13 @@ public class SceneManager {
             "/via/sep2/css/auth.css"
         );
 
-        primaryStage.setMinWidth(450);
-        primaryStage.setMinHeight(600);
-        primaryStage.setMaxWidth(650);
-        primaryStage.setMaxHeight(800);
+        primaryStage.setMinWidth(500);
+        primaryStage.setMinHeight(650);
+        primaryStage.setMaxWidth(750);
+        primaryStage.setMaxHeight(750);
 
         primaryStage.setWidth(500);
-        primaryStage.setHeight(650);
+        primaryStage.setHeight(750);
     }
 
     public void showMainChat() {
@@ -151,7 +151,8 @@ public class SceneManager {
                 MAIN_CHAT_SCENE,
                 "/via/sep2/fxml/chat/MainChatView.fxml",
                 "Chat - Logged in",
-                "/via/sep2/css/chat.css"
+                "/via/sep2/css/chat.css",
+                "/via/sep2/css/user-search.css"
             );
 
             primaryStage.setMinWidth(800);
