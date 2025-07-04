@@ -1,11 +1,17 @@
 package via.sep2.client.view.chat;
 
 import java.net.URL;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -375,37 +381,79 @@ public class MainChatViewController implements Initializable {
     }
 
     private void addMessageToUI(MessageDTO message) {
-        Label messageLabel = createMessageLabel(message);
-        messagesContainer.getChildren().add(messageLabel);
+        VBox messageBubble = createMessageBubble(message);
+        messagesContainer.getChildren().add(messageBubble);
     }
 
-    private Label createMessageLabel(MessageDTO message) {
-        Label messageLabel = new Label();
+    private VBox createMessageBubble(MessageDTO message) {
         UserDTO currentUser = viewModel.getCurrentUser();
-
         boolean isOwnMessage = message
             .getSenderUsername()
             .equals(currentUser.getUsername());
-        String displayText;
+
+        VBox messageWrapper = new VBox();
+        messageWrapper.setSpacing(2);
+        messageWrapper.setPadding(new Insets(4, 0, 4, 0));
+
+        HBox contentContainer = new HBox();
+        contentContainer.setMaxWidth(Double.MAX_VALUE);
+
+        VBox messageBubble = new VBox();
+        messageBubble.setSpacing(4);
+        messageBubble.setPadding(new Insets(8, 12, 8, 12));
+        messageBubble.setMaxWidth(400);
 
         if (isOwnMessage) {
-            displayText = message.getContent();
+            contentContainer.setAlignment(Pos.CENTER_RIGHT);
+            messageBubble.getStyleClass().addAll("message", "own-message");
         } else {
-            displayText =
-                message.getSenderUsername() + ": " + message.getContent();
+            contentContainer.setAlignment(Pos.CENTER_LEFT);
+            messageBubble.getStyleClass().addAll("message", "other-message");
         }
 
-        messageLabel.setText(displayText);
-        messageLabel.setWrapText(true);
-        messageLabel.setMaxWidth(400);
+        ChatItemData selectedChat = viewModel.getSelectedChat();
+        if (
+            !isOwnMessage &&
+            selectedChat != null &&
+            selectedChat.getType() == ChatItemData.ChatType.GROUP
+        ) {
+            Label senderLabel = new Label(message.getSenderUsername());
+            senderLabel.getStyleClass().add("message-sender");
+            senderLabel.setStyle(
+                "-fx-font-weight: bold; -fx-font-size: 11px; -fx-opacity: 0.7;"
+            );
+            messageBubble.getChildren().add(senderLabel);
+        }
 
+        Label contentLabel = new Label(message.getContent());
+        contentLabel.setWrapText(true);
+        contentLabel.getStyleClass().add("message-content");
         if (isOwnMessage) {
-            messageLabel.getStyleClass().addAll("message", "own-message");
-        } else {
-            messageLabel.getStyleClass().addAll("message", "other-message");
+            contentLabel.setStyle("-fx-text-fill: white;");
         }
+        messageBubble.getChildren().add(contentLabel);
 
-        return messageLabel;
+        Label timestampLabel = new Label(
+            formatMessageTimestamp(message.getTimestamp())
+        );
+        timestampLabel.getStyleClass().add("message-timestamp");
+        timestampLabel.setStyle("-fx-font-size: 10px; -fx-opacity: 0.6;");
+        if (isOwnMessage) {
+            timestampLabel.setStyle(
+                "-fx-font-size: 10px; -fx-opacity: 0.8; -fx-text-fill: white;"
+            );
+            timestampLabel.setAlignment(Pos.CENTER_RIGHT);
+        } else {
+            timestampLabel.setStyle("-fx-font-size: 10px; -fx-opacity: 0.6;");
+            timestampLabel.setAlignment(Pos.CENTER_LEFT);
+        }
+        messageBubble.getChildren().add(timestampLabel);
+
+        contentContainer.getChildren().add(messageBubble);
+
+        messageWrapper.getChildren().add(contentContainer);
+
+        return messageWrapper;
     }
 
     private void showEmptyState() {
@@ -485,5 +533,37 @@ public class MainChatViewController implements Initializable {
 
     public MainChatViewModel getViewModel() {
         return viewModel;
+    }
+
+    private String formatMessageTimestamp(long timestamp) {
+        if (timestamp == 0) return "";
+
+        LocalDateTime messageTime = LocalDateTime.ofInstant(
+            Instant.ofEpochMilli(timestamp),
+            ZoneId.systemDefault()
+        );
+
+        LocalDateTime now = LocalDateTime.now();
+
+        if (messageTime.toLocalDate().equals(now.toLocalDate())) {
+            return messageTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+        }
+
+        if (messageTime.toLocalDate().equals(now.toLocalDate().minusDays(1))) {
+            return (
+                "Yesterday " +
+                messageTime.format(DateTimeFormatter.ofPattern("HH:mm"))
+            );
+        }
+
+        if (messageTime.getYear() == now.getYear()) {
+            return messageTime.format(
+                DateTimeFormatter.ofPattern("MMM d, HH:mm")
+            );
+        }
+
+        return messageTime.format(
+            DateTimeFormatter.ofPattern("MMM d, yyyy HH:mm")
+        );
     }
 }
