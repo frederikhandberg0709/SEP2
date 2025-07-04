@@ -136,13 +136,13 @@ public class SceneManager {
             "/via/sep2/css/auth.css"
         );
 
-        primaryStage.setMinWidth(450);
-        primaryStage.setMinHeight(600);
-        primaryStage.setMaxWidth(650);
-        primaryStage.setMaxHeight(800);
+        primaryStage.setMinWidth(500);
+        primaryStage.setMinHeight(650);
+        primaryStage.setMaxWidth(750);
+        primaryStage.setMaxHeight(750);
 
         primaryStage.setWidth(500);
-        primaryStage.setHeight(650);
+        primaryStage.setHeight(750);
     }
 
     public void showMainChat() {

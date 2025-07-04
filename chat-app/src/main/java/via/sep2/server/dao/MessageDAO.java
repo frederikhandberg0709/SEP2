@@ -172,7 +172,7 @@ public class MessageDAO {
         }
         }*/
 
-    public void deleteMessage(int messageId, String deleterUsername)
+    /*public void deleteMessage(int messageId, String deleterUsername)
         throws SQLException {
         if (!canUserDeleteMessage(messageId, deleterUsername)) {
             throw new SQLException(
@@ -189,7 +189,7 @@ public class MessageDAO {
             stmt.setInt(1, messageId);
             stmt.executeUpdate();
         }
-    }
+    }*/
 
     public MessageDTO getMessageById(int messageId) throws SQLException {
         String sql = """
