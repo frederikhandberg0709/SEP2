@@ -36,6 +36,56 @@
             <artifactId>dotenv-java</artifactId>
             <version>3.2.0</version>
         </dependency>
+
+        <!-- Testing -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.13.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>5.13.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite</artifactId>
+            <version>1.13.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.18.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>5.18.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testfx</groupId>
+            <artifactId>testfx-core</artifactId>
+            <version>4.0.18</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testfx</groupId>
+            <artifactId>testfx-junit5</artifactId>
+            <version>4.0.18</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-swing</artifactId>
+            <version>${javafx.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -54,6 +104,66 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <!-- Use classpath instead of module path for tests -->
+                    <useModulePath>false</useModulePath>
+                    
+                    <!-- JVM arguments for JavaFX and module access -->
+                    <argLine>
+                        --add-opens javafx.graphics/com.sun.javafx.application=ALL-UNNAMED
+                        --add-opens javafx.base/com.sun.javafx.logging=ALL-UNNAMED
+                        --add-opens javafx.base/com.sun.javafx.runtime=ALL-UNNAMED
+                        --add-opens javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED
+                        --add-opens javafx.swing/javafx.embed.swing=ALL-UNNAMED
+                        --add-opens java.base/java.lang=ALL-UNNAMED
+                        --add-opens java.base/java.util=ALL-UNNAMED
+                        --add-opens java.base/java.lang.reflect=ALL-UNNAMED
+                        --add-opens java.desktop/java.awt=ALL-UNNAMED
+                        --add-opens via.sep2/via.sep2.client.viewmodel.auth=ALL-UNNAMED
+                        --add-opens via.sep2/via.sep2.client.service=ALL-UNNAMED
+                        --add-opens via.sep2/via.sep2.client.view.auth=ALL-UNNAMED
+                        --add-opens via.sep2/via.sep2.client.view.chat=ALL-UNNAMED
+                        --add-opens via.sep2/via.sep2.client.connection=ALL-UNNAMED
+                        --add-opens via.sep2/via.sep2.client.factory=ALL-UNNAMED
+                        --add-opens via.sep2/via.sep2.client.state=ALL-UNNAMED
+                        --add-opens via.sep2/via.sep2.client.event=ALL-UNNAMED
+                        --add-opens via.sep2/via.sep2.client.event.events=ALL-UNNAMED
+                        --add-opens via.sep2/via.sep2.client.command=ALL-UNNAMED
+                        --add-exports via.sep2/via.sep2.client.viewmodel.auth=ALL-UNNAMED
+                        --add-exports via.sep2/via.sep2.client.service=ALL-UNNAMED
+                        --add-exports via.sep2/via.sep2.client.view.auth=ALL-UNNAMED
+                        --add-exports via.sep2/via.sep2.client.view.chat=ALL-UNNAMED
+                        --add-exports via.sep2/via.sep2.client.connection=ALL-UNNAMED
+                        --add-exports via.sep2/via.sep2.client.factory=ALL-UNNAMED
+                        --add-exports via.sep2/via.sep2.client.state=ALL-UNNAMED
+                        --add-exports via.sep2/via.sep2.client.event=ALL-UNNAMED
+                        --add-exports via.sep2/via.sep2.client.event.events=ALL-UNNAMED
+                        --add-exports via.sep2/via.sep2.client.command=ALL-UNNAMED
+                        --add-exports via.sep2/via.sep2.shared.dto=ALL-UNNAMED
+                        --add-exports via.sep2/via.sep2.shared.interfaces=ALL-UNNAMED
+                    </argLine>
+                    
+                    <!-- Test configuration -->
+                    <includes>
+                        <include>**/*Test.java</include>
+                        <include>**/*Tests.java</include>
+                    </includes>
+                    
+                    <!-- Parallel execution -->
+                    <parallel>methods</parallel>
+                    <threadCount>4</threadCount>
+                    
+                    <!-- Test output configuration -->
+                    <trimStackTrace>false</trimStackTrace>
+                    <useFile>false</useFile>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>

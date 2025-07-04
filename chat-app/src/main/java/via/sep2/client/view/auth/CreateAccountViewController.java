@@ -63,6 +63,15 @@ public class CreateAccountViewController {
         sceneManager.showLogin();
     }
 
+    // For testing
+    public void triggerCreateAccount() {
+        handleCreateAccount();
+    }
+
+    public void triggerLogin() {
+        handleLogin();
+    }
+
     public void resetForm() {
         viewModel.reset();
         firstNameField.requestFocus();

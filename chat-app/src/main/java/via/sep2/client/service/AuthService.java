@@ -18,7 +18,7 @@ public class AuthService {
     }
 
     // For testing
-    AuthService(ConnectionManager connectionManager) {
+    public AuthService(ConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
     }
 
