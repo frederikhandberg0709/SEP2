@@ -12,6 +12,8 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import via.sep2.client.connection.ConnectionManager;
 import via.sep2.client.event.EventListener;
+import via.sep2.client.event.events.MessageDeletedEvent;
+import via.sep2.client.event.events.MessageEditedEvent;
 import via.sep2.client.event.events.MessageReceivedEvent;
 import via.sep2.client.factory.ServiceFactory;
 import via.sep2.client.service.AuthService;
@@ -53,6 +55,8 @@ public class MainChatViewModel {
     private ChatFilter currentFilter = ChatFilter.ALL;
 
     private final EventListener<MessageReceivedEvent> messageReceivedListener;
+    private final EventListener<MessageEditedEvent> messageEditedListener;
+    private final EventListener<MessageDeletedEvent> messageDeletedListener;
 
     public enum ChatFilter {
         ALL,
@@ -70,6 +74,8 @@ public class MainChatViewModel {
         this.connectionManager = ConnectionManager.getInstance();
 
         this.messageReceivedListener = this::handleMessageReceived;
+        this.messageEditedListener = this::handleMessageEdited;
+        this.messageDeletedListener = this::handleMessageDeleted;
 
         setupEventListeners();
         setupSearchFilter();
@@ -79,6 +85,12 @@ public class MainChatViewModel {
         connectionManager
             .getEventBus()
             .subscribe(MessageReceivedEvent.class, messageReceivedListener);
+        connectionManager
+            .getEventBus()
+            .subscribe(MessageEditedEvent.class, messageEditedListener);
+        connectionManager
+            .getEventBus()
+            .subscribe(MessageDeletedEvent.class, messageDeletedListener);
     }
 
     private void setupSearchFilter() {
@@ -385,6 +397,70 @@ public class MainChatViewModel {
         });
     }
 
+    private void handleMessageEdited(MessageEditedEvent event) {
+        Platform.runLater(() -> {
+            MessageDTO editedMessage = event.getMessage();
+
+            if (isMessageForCurrentChat(editedMessage)) {
+                updateMessageInList(editedMessage);
+            }
+
+            updateChatPreview(editedMessage);
+        });
+    }
+
+    private void handleMessageDeleted(MessageDeletedEvent event) {
+        Platform.runLater(() -> {
+            if (isMessageForCurrentChat(event.getRoomId())) {
+                removeMessageFromList(event.getMessageId());
+            }
+        });
+    }
+
+    public boolean isMessageForCurrentChat(MessageDTO message) {
+        if (selectedChat == null) {
+            return false;
+        }
+
+        if (selectedChat.getType() == ChatItemData.ChatType.DIRECT) {
+            return (
+                message.isDirectMessage() &&
+                Math.abs(message.getRoomId()) == selectedChat.getId()
+            );
+        } else {
+            return (
+                message.isGroupMessage() &&
+                message.getRoomId() == selectedChat.getId()
+            );
+        }
+    }
+
+    public boolean isMessageForCurrentChat(int roomId) {
+        if (selectedChat == null) {
+            return false;
+        }
+
+        if (selectedChat.getType() == ChatItemData.ChatType.DIRECT) {
+            return roomId == -selectedChat.getId();
+        } else {
+            return roomId == selectedChat.getId();
+        }
+    }
+
+    public void updateMessageInList(MessageDTO updatedMessage) {
+        for (int i = 0; i < currentMessages.size(); i++) {
+            MessageDTO msg = currentMessages.get(i);
+            if (msg.getId() == updatedMessage.getId()) {
+                currentMessages.set(i, updatedMessage);
+                break;
+            }
+        }
+    }
+
+    public void removeMessageFromList(int messageId) {
+        currentMessages.removeIf(msg -> msg.getId() == messageId);
+    }
+
     private void updateChatPreview(MessageDTO message) {
         ChatItemData chatToUpdate = null;
 
@@ -432,6 +508,39 @@ public class MainChatViewModel {
                 selectedChat = updatedChat;
             }
         }
+    }
+
+    public void editMessage(int messageId, String newContent) {
+        if (newContent == null || newContent.trim().isEmpty()) {
+            setErrorMessage("Message content cannot be empty");
+            return;
+        }
+
+        chatService
+            .editMessageAsync(messageId, newContent.trim())
+            .exceptionally(throwable -> {
+                Platform.runLater(() -> {
+                    setErrorMessage(
+                        "Failed to edit message: " +
+                        extractErrorMessage(throwable)
+                    );
+                });
+                return null;
+            });
+    }
+
+    public void deleteMessage(int messageId) {
+        chatService
+            .deleteMessageAsync(messageId)
+            .exceptionally(throwable -> {
+                Platform.runLater(() -> {
+                    setErrorMessage(
+                        "Failed to delete message: " +
+                        extractErrorMessage(throwable)
+                    );
+                });
+                return null;
+            });
     }
 
     private ChatItemData createChatItemFromDirectChat(
@@ -504,6 +613,16 @@ public class MainChatViewModel {
         } else {
             return (diff / 86400000) + "d";
         }
+    }
+
+    private String extractErrorMessage(Throwable throwable) {
+        Throwable cause = throwable.getCause();
+        if (cause != null && cause.getMessage() != null) {
+            return cause.getMessage();
+        }
+        return throwable.getMessage() != null
+            ? throwable.getMessage()
+            : "An unexpected error occurred";
     }
 
     private void setErrorMessage(String message) {

@@ -74,6 +74,12 @@ public interface ChatServerInterface extends Remote {
     // Message
     void sendMessage(MessageDTO message) throws RemoteException;
 
+    void editMessage(int messageId, String newContent, String editorUsername)
+        throws RemoteException;
+
+    void deleteMessage(int messageId, String deleterUsername)
+        throws RemoteException;
+
     List<MessageDTO> getGroupChatMessages(int roomId, int limit)
         throws RemoteException;
 

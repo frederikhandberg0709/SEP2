@@ -430,6 +430,78 @@ public class ChatServerImpl
         clients.remove(username);
     }
 
+    @Override
+    public void editMessage(
+        int messageId,
+        String newContent,
+        String editorUsername
+    ) throws RemoteException {
+        try {
+            logger.info(
+                "User " + editorUsername + " editing message " + messageId
+            );
+
+            // Get the original message to check permissions and get room info
+            MessageDTO originalMessage = messageDAO.getMessageById(messageId);
+            if (originalMessage == null) {
+                throw new RemoteException("Message not found");
+            }
+
+            // Edit the message in database
+            messageDAO.editMessage(messageId, newContent, editorUsername);
+
+            // Get the updated message
+            MessageDTO updatedMessage = messageDAO.getMessageById(messageId);
+            if (updatedMessage != null) {
+                // Notify relevant users about the edit
+                if (updatedMessage.isDirectMessage()) {
+                    notifyDirectMessageEdited(updatedMessage);
+                } else {
+                    notifyGroupMessageEdited(updatedMessage);
+                }
+            }
+        } catch (SQLException e) {
+            logger.severe("Error editing message: " + e.getMessage());
+            throw new RemoteException(
+                "Error editing message: " + e.getMessage()
+            );
+        }
+    }
+
+    @Override
+    public void deleteMessage(int messageId, String deleterUsername)
+        throws RemoteException {
+        try {
+            logger.info(
+                "User " + deleterUsername + " deleting message " + messageId
+            );
+
+            // Get the original message to get room info before deletion
+            MessageDTO originalMessage = messageDAO.getMessageById(messageId);
+            if (originalMessage == null) {
+                throw new RemoteException("Message not found");
+            }
+
+            int roomId = originalMessage.getRoomId();
+            boolean isDirectMessage = originalMessage.isDirectMessage();
+
+            // Delete the message in database
+            messageDAO.deleteMessage(messageId, deleterUsername);
+
+            // Notify relevant users about the deletion
+            if (isDirectMessage) {
+                notifyDirectMessageDeleted(messageId, roomId);
+            } else {
+                notifyGroupMessageDeleted(messageId, roomId);
+            }
+        } catch (SQLException e) {
+            logger.severe("Error deleting message: " + e.getMessage());
+            throw new RemoteException(
+                "Error deleting message: " + e.getMessage()
+            );
+        }
+    }
+
     private int getUserIdByUsername(String username) {
         try {
             UserDAO userDAO = UserDAO.getInstance();
@@ -558,6 +630,78 @@ public class ChatServerImpl
             }
         } catch (SQLException e) {
             logger.severe("Error notifying group message: " + e.getMessage());
+        }
+    }
+
+    private void notifyDirectMessageEdited(MessageDTO message) {
+        try {
+            DirectChatDTO chat = directChatDAO.getDirectChatById(
+                Math.abs(message.getRoomId())
+            );
+            if (chat != null) {
+                notifyUser(chat.getUser1Username(), client ->
+                    client.onMessageEdited(message)
+                );
+                notifyUser(chat.getUser2Username(), client ->
+                    client.onMessageEdited(message)
+                );
+            }
+        } catch (SQLException e) {
+            logger.severe(
+                "Error notifying direct message edit: " + e.getMessage()
+            );
+        }
+    }
+
+    private void notifyGroupMessageEdited(MessageDTO message) {
+        try {
+            List<ChatMemberDTO> members = groupChatDAO.getGroupMembers(
+                message.getRoomId()
+            );
+            for (ChatMemberDTO member : members) {
+                notifyUser(member.getUsername(), client ->
+                    client.onMessageEdited(message)
+                );
+            }
+        } catch (SQLException e) {
+            logger.severe(
+                "Error notifying group message edit: " + e.getMessage()
+            );
+        }
+    }
+
+    private void notifyDirectMessageDeleted(int messageId, int roomId) {
+        try {
+            DirectChatDTO chat = directChatDAO.getDirectChatById(
+                Math.abs(roomId)
+            );
+            if (chat != null) {
+                notifyUser(chat.getUser1Username(), client ->
+                    client.onMessageDeleted(messageId, roomId)
+                );
+                notifyUser(chat.getUser2Username(), client ->
+                    client.onMessageDeleted(messageId, roomId)
+                );
+            }
+        } catch (SQLException e) {
+            logger.severe(
+                "Error notifying direct message deletion: " + e.getMessage()
+            );
+        }
+    }
+
+    private void notifyGroupMessageDeleted(int messageId, int roomId) {
+        try {
+            List<ChatMemberDTO> members = groupChatDAO.getGroupMembers(roomId);
+            for (ChatMemberDTO member : members) {
+                notifyUser(member.getUsername(), client ->
+                    client.onMessageDeleted(messageId, roomId)
+                );
+            }
+        } catch (SQLException e) {
+            logger.severe(
+                "Error notifying group message deletion: " + e.getMessage()
+            );
         }
     }
 

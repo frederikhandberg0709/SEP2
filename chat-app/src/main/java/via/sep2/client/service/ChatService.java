@@ -16,6 +16,7 @@ public class ChatService {
     private static final Logger logger = Logger.getLogger(
         ChatService.class.getName()
     );
+
     private final ConnectionManager connectionManager;
 
     public ChatService() {
@@ -249,6 +250,36 @@ public class ChatService {
                     "Failed to get group chat members",
                     e
                 );
+            }
+        });
+    }
+
+    // Edit and delete messages
+    public CompletableFuture<Void> editMessageAsync(
+        int messageId,
+        String newContent
+    ) {
+        return CompletableFuture.runAsync(() -> {
+            validateAuthenticated();
+            try {
+                logger.info("Editing message: " + messageId);
+                connectionManager
+                    .getRmiClient()
+                    .editMessage(messageId, newContent);
+            } catch (RemoteException e) {
+                throw new RuntimeException("Failed to edit message", e);
+            }
+        });
+    }
+
+    public CompletableFuture<Void> deleteMessageAsync(int messageId) {
+        return CompletableFuture.runAsync(() -> {
+            validateAuthenticated();
+            try {
+                logger.info("Deleting message: " + messageId);
+                connectionManager.getRmiClient().deleteMessage(messageId);
+            } catch (RemoteException e) {
+                throw new RuntimeException("Failed to delete message", e);
             }
         });
     }

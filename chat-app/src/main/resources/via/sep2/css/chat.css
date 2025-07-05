@@ -257,6 +257,12 @@
     -fx-wrap-text: true;
     -fx-font-size: 14;
     -fx-max-width: 400;
+    -fx-pref-width: -1;
+    -fx-min-width: -1;
+}
+
+.message:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 0, 2);
 }
 
 .own-message {
@@ -265,10 +271,62 @@
     -fx-alignment: center-right;
 }
 
+.own-message-content {
+    -fx-text-fill: white;
+    -fx-wrap-text: true;
+    -fx-max-width: 400;
+    -fx-pref-width: -1;
+}
+
 .other-message {
     -fx-background-color: #e4e6ea;
     -fx-text-fill: #1c1e21;
     -fx-alignment: center-left;
+}
+
+.other-message-content {
+    -fx-text-fill: #1c1e21;
+    -fx-wrap-text: true;
+    -fx-max-width: 400;
+    -fx-pref-width: -1;
+}
+
+.message-meta {
+    -fx-text-fill: #65676b;
+    -fx-font-size: 10;
+    -fx-opacity: 0.8;
+    -fx-max-width: 400;
+    -fx-pref-width: -1;
+}
+
+.edited-indicator {
+    -fx-text-fill: #65676b;
+    -fx-font-style: italic;
+}
+
+.own-message .message-meta {
+    -fx-text-fill: rgba(255, 255, 255, 0.8);
+}
+
+.context-menu {
+    -fx-background-color: white;
+    -fx-border-color: #e5e7eb;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0, 0, 5);
+}
+
+.context-menu .menu-item {
+    -fx-padding: 8 16 8 16;
+    -fx-font-size: 14;
+}
+
+.context-menu .menu-item:hover {
+    -fx-background-color: #f0f2f5;
+}
+
+.context-menu .menu-item .label {
+    -fx-text-fill: #1c1e21;
 }
 
 /* Message Input Area */

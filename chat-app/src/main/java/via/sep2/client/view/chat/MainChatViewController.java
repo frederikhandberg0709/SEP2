@@ -1,6 +1,8 @@
 package via.sep2.client.view.chat;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -100,6 +102,12 @@ public class MainChatViewController implements Initializable {
     private VBox emptyStateArea;
 
     private MainChatViewModel viewModel;
+
+    private Map<Integer, MessageLabel> messageLabels;
+
+    public MainChatViewController() {
+        this.messageLabels = new HashMap<>();
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -375,11 +383,31 @@ public class MainChatViewController implements Initializable {
     }
 
     private void addMessageToUI(MessageDTO message) {
-        Label messageLabel = createMessageLabel(message);
+        //Label messageLabel = createMessageLabel(message);
+        //messagesContainer.getChildren().add(messageLabel);
+
+        String currentUsername = viewModel.getCurrentUser().getUsername();
+
+        MessageLabel messageLabel = new MessageLabel(
+            message,
+            currentUsername,
+            this::handleEditMessage,
+            this::handleDeleteMessage
+        );
+
+        messageLabels.put(message.getId(), messageLabel);
         messagesContainer.getChildren().add(messageLabel);
     }
 
-    private Label createMessageLabel(MessageDTO message) {
+    private void handleEditMessage(Integer messageId, String newContent) {
+        viewModel.editMessage(messageId, newContent);
+    }
+
+    private void handleDeleteMessage(Integer messageId) {
+        viewModel.deleteMessage(messageId);
+    }
+
+    /*private Label createMessageLabel(MessageDTO message) {
         Label messageLabel = new Label();
         UserDTO currentUser = viewModel.getCurrentUser();
 
@@ -406,7 +434,7 @@ public class MainChatViewController implements Initializable {
         }
 
         return messageLabel;
-    }
+        }*/
 
     private void showEmptyState() {
         chatHeader.setVisible(false);

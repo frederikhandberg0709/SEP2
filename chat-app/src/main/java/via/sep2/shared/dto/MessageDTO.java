@@ -1,7 +1,6 @@
 package via.sep2.shared.dto;
 
 import java.io.Serializable;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,7 +19,7 @@ public class MessageDTO implements Serializable {
     private long timestamp;
     private boolean isEdited;
     private long editedTimestamp;
-
+    private boolean isDeleted;
 
     public MessageDTO(int roomId, String senderUsername, String content) {
         this.roomId = roomId;
@@ -28,7 +27,7 @@ public class MessageDTO implements Serializable {
         this.content = content;
         this.timestamp = System.currentTimeMillis();
         this.isEdited = false;
-
+        this.isDeleted = false;
     }
 
     public boolean isDirectMessage() {
@@ -39,8 +38,11 @@ public class MessageDTO implements Serializable {
         return roomId > 0;
     }
 
-     public boolean canUserEdit(String username) {
-    // return username.equals(senderUsername) && !isDeleted;
-         return true;
-     }
-};
+    public boolean canUserEdit(String username) {
+        return username.equals(senderUsername) && !isDeleted;
+    }
+
+    public boolean canUserDelete(String username) {
+        return username.equals(senderUsername) && !isDeleted;
+    }
+}
