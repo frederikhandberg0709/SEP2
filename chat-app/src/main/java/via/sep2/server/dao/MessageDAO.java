@@ -145,7 +145,7 @@ public class MessageDAO {
         return messages;
     }
 
-    /*public void editMessage(
+    public void editMessage(
         int messageId,
         String newContent,
         String editorUsername
@@ -170,7 +170,7 @@ public class MessageDAO {
 
             stmt.executeUpdate();
         }
-        }*/
+
 
     /*public void deleteMessage(int messageId, String deleterUsername)
         throws SQLException {
@@ -211,7 +211,7 @@ public class MessageDAO {
         }
     }
 
-    /*private boolean canUserEditMessage(int messageId, String username)
+    private boolean canUserEditMessage(int messageId, String username)
         throws SQLException {
         String sql =
             "SELECT sender_username FROM messages WHERE id = ? AND is_deleted = false";
@@ -228,7 +228,7 @@ public class MessageDAO {
             }
             return false;
         }
-    }*/
+    }
 
     /*private boolean canUserDeleteMessage(int messageId, String username)
         throws SQLException {
@@ -291,10 +291,10 @@ public class MessageDAO {
         message.setSenderUsername(rs.getString("sender_username"));
         message.setContent(rs.getString("content"));
         message.setTimestamp(rs.getTimestamp("timestamp").getTime());
-        // message.setEdited(rs.getBoolean("is_edited"));
+        message.setEdited(rs.getBoolean("is_edited"));
 
-        // Timestamp editedTs = rs.getTimestamp("edited_timestamp");
-        // message.setEditedTimestamp(editedTs != null ? editedTs.getTime() : 0);
+        Timestamp editedTs = rs.getTimestamp("edited_timestamp");
+         message.setEditedTimestamp(editedTs != null ? editedTs.getTime() : 0);
 
         // message.setDeleted(rs.getBoolean("is_deleted"));
 
