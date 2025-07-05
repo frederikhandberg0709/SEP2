@@ -170,19 +170,7 @@ public class MessageLabel extends HBox {
     }
 
     private void updateContent() {
-        // Update content
-        String displayText;
-        boolean isOwnMessage = message
-            .getSenderUsername()
-            .equals(currentUsername);
-
-        if (isOwnMessage) {
-            displayText = message.getContent();
-        } else {
-            displayText =
-                message.getSenderUsername() + ": " + message.getContent();
-        }
-
+        String displayText = message.getContent();
         contentLabel.setText(displayText);
 
         updateMetaLabel();
