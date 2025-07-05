@@ -41,5 +41,6 @@ public class MessageDTO implements Serializable {
 
      public boolean canUserEdit(String username) {
     // return username.equals(senderUsername) && !isDeleted;
-    // }
-}
+         return true;
+     }
+};
