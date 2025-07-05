@@ -279,6 +279,23 @@ public class ChatClientImpl
         server.demoteFromAdmin(currentUser.getUsername(), username, roomId);
     }
 
+    public void editMessage(int messageId, String newContent)
+        throws RemoteException {
+        if (!connected || currentUser == null) {
+            throw new IllegalStateException("Not connected or not logged in");
+        }
+
+        server.editMessage(messageId, newContent, currentUser.getUsername());
+    }
+
+    public void deleteMessage(int messageId) throws RemoteException {
+        if (!connected || currentUser == null) {
+            throw new IllegalStateException("Not connected or not logged in");
+        }
+
+        server.deleteMessage(messageId, currentUser.getUsername());
+    }
+
     @Override
     public void onMessageReceived(MessageDTO message) throws RemoteException {
         logger.info("Received message from " + message.getSenderUsername());
@@ -346,6 +363,21 @@ public class ChatClientImpl
         );
         notifyListeners(listener ->
             listener.onDemotedFromAdmin(roomId, user, demotedBy)
+        );
+    }
+
+    @Override
+    public void onMessageEdited(MessageDTO message) throws RemoteException {
+        logger.info("Message edited: " + message.getId());
+        notifyListeners(listener -> listener.onMessageEdited(message));
+    }
+
+    @Override
+    public void onMessageDeleted(int messageId, int roomId)
+        throws RemoteException {
+        logger.info("Message deleted: " + messageId + " in room " + roomId);
+        notifyListeners(listener ->
+            listener.onMessageDeleted(messageId, roomId)
         );
     }
 
