@@ -172,7 +172,7 @@ public class MessageDAO {
         }
         }*/
 
-    /*public void deleteMessage(int messageId, String deleterUsername)
+    public void deleteMessage(int messageId, String deleterUsername)
         throws SQLException {
         if (!canUserDeleteMessage(messageId, deleterUsername)) {
             throw new SQLException(
@@ -189,7 +189,7 @@ public class MessageDAO {
             stmt.setInt(1, messageId);
             stmt.executeUpdate();
         }
-    }*/
+    }
 
     public MessageDTO getMessageById(int messageId) throws SQLException {
         String sql = """
@@ -230,7 +230,7 @@ public class MessageDAO {
         }
     }*/
 
-    /*private boolean canUserDeleteMessage(int messageId, String username)
+    private boolean canUserDeleteMessage(int messageId, String username)
         throws SQLException {
         String sql = """
             SELECT m.sender_username, m.room_id, m.direct_chat_id,
@@ -260,7 +260,7 @@ public class MessageDAO {
             }
             return false;
         }
-    }*/
+    }
 
     private List<MessageDTO> getMessagesFromQuery(String sql, int id, int limit)
         throws SQLException {
@@ -296,7 +296,7 @@ public class MessageDAO {
         // Timestamp editedTs = rs.getTimestamp("edited_timestamp");
         // message.setEditedTimestamp(editedTs != null ? editedTs.getTime() : 0);
 
-        // message.setDeleted(rs.getBoolean("is_deleted"));
+         message.setDeleted(rs.getBoolean("is_deleted"));
 
         return message;
     }
