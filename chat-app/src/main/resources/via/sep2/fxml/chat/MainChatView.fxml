@@ -92,6 +92,17 @@
                         text="Group"
                         toggleGroup="$chatFilterGroup"
                     />
+                    <VBox spacing="8.0">
+                        <padding>
+                            <Insets left="20.0" right="20.0" bottom="16.0" />
+                        </padding>
+                        <Button
+                            fx:id="createGroupButton"
+                            text="+"
+                            styleClass="create-group-btn"
+                            maxWidth="Infinity"
+                        />
+                    </VBox>
                 </HBox>
             </VBox>
 
@@ -182,6 +193,15 @@
                         text="Active 2 minutes ago"
                     />
                 </VBox>
+
+                <Region HBox.hgrow="ALWAYS" />
+                                <MenuButton
+                    fx:id="chatOptionsButton"
+                    styleClass="chat-options-btn"
+                    text="⋯"
+                    visible="false"
+                    managed="false"
+                />
             </HBox>
 
             <!-- Messages Area -->
