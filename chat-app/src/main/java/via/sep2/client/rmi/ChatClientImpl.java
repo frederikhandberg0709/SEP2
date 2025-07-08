@@ -167,6 +167,13 @@ public class ChatClientImpl
                 maxMembers);
     }
 
+    public ChatRoomDTO getGroupChatById(int roomId) throws RemoteException {
+        if (!connected) {
+            throw new IllegalStateException("Not connected to server");
+        }
+        return server.getGroupChatById(roomId);
+    }
+
     public List<ChatRoomDTO> getPublicGroupChats() throws RemoteException {
         if (!connected) {
             throw new IllegalStateException("Not connected to server");
@@ -221,7 +228,7 @@ public class ChatClientImpl
             throw new IllegalStateException("Not connected or not logged in");
         }
 
-        server.addUserToGroup(roomId, username);
+        server.addUserToGroup(roomId, username, currentUser.getUsername());
     }
 
     public void removeUserFromGroup(int roomId, String username) throws RemoteException {
@@ -229,7 +236,7 @@ public class ChatClientImpl
             throw new IllegalStateException("Not connected or not logged in");
         }
 
-        server.removeUserFromGroup(roomId, username);
+        server.removeUserFromGroup(roomId, username, currentUser.getUsername());
     }
 
     public void sendDirectMessage(int directChatId, String content)

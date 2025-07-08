@@ -198,6 +198,21 @@ public class ChatServerImpl
     }
 
     @Override
+    public ChatRoomDTO getGroupChatById(int roomId) throws RemoteException {
+        try {
+            logger.info("Getting group chat by ID: " + roomId);
+            ChatRoomDTO room = groupChatDAO.getGroupChatById(roomId);
+            if (room == null) {
+                throw new RemoteException("Group chat not found");
+            }
+            return room;
+        } catch (SQLException e) {
+            logger.severe("Error getting group chat by ID: " + e.getMessage());
+            throw new RemoteException("Error getting group chat");
+        }
+    }
+
+    @Override
     public List<ChatRoomDTO> getPublicGroupChats() throws RemoteException {
         try {
             return groupChatDAO.getPublicGroupChats();
@@ -238,11 +253,11 @@ public class ChatServerImpl
                     roomId,
                     username,
                     MemberRole.MEMBER,
-                    "system");
+                    null);
 
             UserDTO user = authModel.getUserById(getUserIdByUsername(username));
             if (user != null) {
-                notifyUserJoinedGroup(roomId, user);
+                notifyUserJoinedGroup(roomId, user, null);
             }
         } catch (SQLException e) {
             logger.severe("Error joining group chat: " + e.getMessage());
@@ -360,7 +375,7 @@ public class ChatServerImpl
     }
 
     @Override
-    public void addUserToGroup(int roomId, String username) throws RemoteException {
+    public void addUserToGroup(int roomId, String username, String inviterUsername) throws RemoteException {
         try {
             logger.info("Adding user " + username + " to group " + roomId);
 
@@ -378,9 +393,14 @@ public class ChatServerImpl
                 throw new RemoteException("User is already in the group");
             }
 
-            groupChatDAO.addMemberToGroup(roomId, username, MemberRole.MEMBER, "admin");
+            MemberRole inviterRole = groupChatDAO.getUserRole(inviterUsername, roomId);
+            if (inviterRole == null || inviterRole == MemberRole.MEMBER) {
+                throw new RemoteException("Only admins and creators can add users to the group");
+            }
 
-            notifyUserJoinedGroup(roomId, user);
+            groupChatDAO.addMemberToGroup(roomId, username, MemberRole.MEMBER, inviterUsername);
+
+            notifyUserJoinedGroup(roomId, user, inviterUsername);
 
             logger.info("Successfully added user " + username + " to group " + roomId);
 
@@ -391,7 +411,7 @@ public class ChatServerImpl
     }
 
     @Override
-    public void removeUserFromGroup(int roomId, String username) throws RemoteException {
+    public void removeUserFromGroup(int roomId, String username, String removerUsername) throws RemoteException {
         try {
             logger.info("Removing user " + username + " from group " + roomId);
 
@@ -404,12 +424,25 @@ public class ChatServerImpl
                 throw new RemoteException("User is not in the group");
             }
 
+            MemberRole removerRole = groupChatDAO.getUserRole(removerUsername, roomId);
+            if (removerRole == null || removerRole == MemberRole.MEMBER) {
+                throw new RemoteException("Only admins and creators can remove users from the group");
+            }
+
             UserDTO user = UserDAO.getInstance().findByUsername(username);
+
+            List<ChatMemberDTO> membersBeforeRemoval = groupChatDAO.getGroupMembers(roomId);
 
             groupChatDAO.removeMemberFromGroup(roomId, username);
 
             if (user != null) {
-                notifyUserLeftGroup(roomId, user);
+                // notifyUserLeftGroup(roomId, user);
+                for (ChatMemberDTO member : membersBeforeRemoval) {
+                    logger.info("Notifying member: " + member.getUsername() + " about removal of " + username);
+                    notifyUser(member.getUsername(),
+                            client -> client.onUserLeftGroup(roomId, user, true, removerUsername)); // true = was
+                                                                                                    // removed
+                }
             }
 
             logger.info("Successfully removed user " + username + " from group " + roomId);
@@ -571,13 +604,15 @@ public class ChatServerImpl
         });
     }
 
-    private void notifyUserJoinedGroup(int roomId, UserDTO user) {
+    private void notifyUserJoinedGroup(int roomId, UserDTO user, String inviterUsername) {
         try {
             List<ChatMemberDTO> members = groupChatDAO.getGroupMembers(roomId);
             for (ChatMemberDTO member : members) {
-                if (!member.getUsername().equals(user.getUsername())) {
-                    notifyUser(member.getUsername(), client -> client.onUserJoinedGroup(roomId, user, "system"));
-                }
+                // if (!member.getUsername().equals(user.getUsername())) {
+                String notificationInviter = inviterUsername != null ? inviterUsername : "system";
+                notifyUser(member.getUsername(),
+                        client -> client.onUserJoinedGroup(roomId, user, notificationInviter));
+                // }
             }
         } catch (SQLException e) {
             logger.severe("Error notifying group members: " + e.getMessage());
