@@ -7,6 +7,7 @@ import via.sep2.client.event.EventBus;
 import via.sep2.client.event.events.ConnectionLostEvent;
 import via.sep2.client.event.events.DirectChatCreatedEvent;
 import via.sep2.client.event.events.GroupChatCreatedEvent;
+import via.sep2.client.event.events.GroupNameUpdatedEvent;
 import via.sep2.client.event.events.MessageDeletedEvent;
 import via.sep2.client.event.events.MessageEditedEvent;
 import via.sep2.client.event.events.MessageReceivedEvent;
@@ -27,8 +28,7 @@ import via.sep2.shared.dto.UserDTO;
 public class ConnectionManager {
 
     private static final Logger logger = Logger.getLogger(
-        ConnectionManager.class.getName()
-    );
+            ConnectionManager.class.getName());
     private static volatile ConnectionManager instance;
     private static final Object lock = new Object();
 
@@ -78,92 +78,87 @@ public class ConnectionManager {
 
     private void setupEventForwarding() {
         rmiClient.addEventListener(
-            new ChatEventListener() {
-                @Override
-                public void onMessageReceived(MessageDTO message) {
-                    eventBus.publish(new MessageReceivedEvent(message));
-                }
+                new ChatEventListener() {
+                    @Override
+                    public void onMessageReceived(MessageDTO message) {
+                        eventBus.publish(new MessageReceivedEvent(message));
+                    }
 
-                @Override
-                public void onMessageEdited(MessageDTO message) {
-                    eventBus.publish(new MessageEditedEvent(message));
-                }
+                    @Override
+                    public void onMessageEdited(MessageDTO message) {
+                        eventBus.publish(new MessageEditedEvent(message));
+                    }
 
-                @Override
-                public void onMessageDeleted(int messageId, int roomId) {
-                    eventBus.publish(
-                        new MessageDeletedEvent(messageId, roomId)
-                    );
-                }
+                    @Override
+                    public void onMessageDeleted(int messageId, int roomId) {
+                        eventBus.publish(
+                                new MessageDeletedEvent(messageId, roomId));
+                    }
 
-                @Override
-                public void onDirectChatCreated(DirectChatDTO directChat) {
-                    eventBus.publish(new DirectChatCreatedEvent(directChat));
-                }
+                    @Override
+                    public void onDirectChatCreated(DirectChatDTO directChat) {
+                        eventBus.publish(new DirectChatCreatedEvent(directChat));
+                    }
 
-                @Override
-                public void onGroupChatCreated(ChatRoomDTO groupChat) {
-                    eventBus.publish(new GroupChatCreatedEvent(groupChat));
-                }
+                    @Override
+                    public void onGroupChatCreated(ChatRoomDTO groupChat) {
+                        eventBus.publish(new GroupChatCreatedEvent(groupChat));
+                    }
 
-                @Override
-                public void onUserJoinedGroup(
-                    int roomId,
-                    UserDTO user,
-                    String invitedBy
-                ) {
-                    eventBus.publish(
-                        new UserJoinedGroupEvent(roomId, user, invitedBy)
-                    );
-                }
+                    @Override
+                    public void onUserJoinedGroup(
+                            int roomId,
+                            UserDTO user,
+                            String invitedBy) {
+                        eventBus.publish(
+                                new UserJoinedGroupEvent(roomId, user, invitedBy));
+                    }
 
-                @Override
-                public void onUserLeftGroup(
-                    int roomId,
-                    UserDTO user,
-                    boolean wasRemoved,
-                    String removedBy
-                ) {
-                    eventBus.publish(
-                        new UserLeftGroupEvent(
-                            roomId,
-                            user,
-                            wasRemoved,
-                            removedBy
-                        )
-                    );
-                }
+                    @Override
+                    public void onUserLeftGroup(
+                            int roomId,
+                            UserDTO user,
+                            boolean wasRemoved,
+                            String removedBy) {
+                        eventBus.publish(
+                                new UserLeftGroupEvent(
+                                        roomId,
+                                        user,
+                                        wasRemoved,
+                                        removedBy));
+                    }
 
-                @Override
-                public void onPromotedToAdmin(
-                    int roomId,
-                    UserDTO user,
-                    String promotedBy
-                ) {
-                    eventBus.publish(
-                        new UserPromotedEvent(roomId, user, promotedBy)
-                    );
-                }
+                    @Override
+                    public void onPromotedToAdmin(
+                            int roomId,
+                            UserDTO user,
+                            String promotedBy) {
+                        eventBus.publish(
+                                new UserPromotedEvent(roomId, user, promotedBy));
+                    }
 
-                @Override
-                public void onDemotedFromAdmin(
-                    int roomId,
-                    UserDTO user,
-                    String demotedBy
-                ) {
-                    eventBus.publish(
-                        new UserDemotedEvent(roomId, user, demotedBy)
-                    );
-                }
+                    @Override
+                    public void onDemotedFromAdmin(
+                            int roomId,
+                            UserDTO user,
+                            String demotedBy) {
+                        eventBus.publish(
+                                new UserDemotedEvent(roomId, user, demotedBy));
+                    }
 
-                @Override
-                public void onDisconnect(String reason) {
-                    currentUser = null;
-                    setSessionState(new DisconnectedState());
-                    eventBus.publish(new ConnectionLostEvent(reason));
-                }
-            }
-        );
+                    @Override
+                    public void onGroupNameUpdated(int roomId, String newName) {
+                        logger.info("Group " + roomId + " name updated to: " + newName);
+                        eventBus.publish(new GroupNameUpdatedEvent(roomId, newName));
+                    }
+
+                    @Override
+                    public void onDisconnect(String reason) {
+                        currentUser = null;
+                        setSessionState(new DisconnectedState());
+                        eventBus.publish(new ConnectionLostEvent(reason));
+                    }
+                });
     }
 
     // Getters and setters

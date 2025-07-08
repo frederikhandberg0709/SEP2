@@ -22,21 +22,22 @@ public interface ChatClientCallbackInterface extends Remote {
     void onGroupChatCreated(ChatRoomDTO groupChat) throws RemoteException;
 
     void onUserJoinedGroup(int roomId, UserDTO user, String invitedBy)
-        throws RemoteException;
+            throws RemoteException;
+
+    void onGroupNameUpdated(int roomId, String newName) throws RemoteException;
 
     void onUserLeftGroup(
-        int roomId,
-        UserDTO user,
-        boolean wasRemoved,
-        String removedBy
-    ) throws RemoteException;
+            int roomId,
+            UserDTO user,
+            boolean wasRemoved,
+            String removedBy) throws RemoteException;
 
     // Admin notifications
     void onPromotedToAdmin(int roomId, UserDTO user, String promotedBy)
-        throws RemoteException;
+            throws RemoteException;
 
     void onDemotedFromAdmin(int roomId, UserDTO user, String demotedBy)
-        throws RemoteException;
+            throws RemoteException;
 
     // System notifications
     void onDisconnect(String reason) throws RemoteException;

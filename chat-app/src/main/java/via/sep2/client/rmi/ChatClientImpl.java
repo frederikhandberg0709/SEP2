@@ -17,12 +17,11 @@ import via.sep2.shared.interfaces.ChatClientCallbackInterface;
 import via.sep2.shared.interfaces.ChatServerInterface;
 
 public class ChatClientImpl
-    extends UnicastRemoteObject
-    implements ChatClientCallbackInterface {
+        extends UnicastRemoteObject
+        implements ChatClientCallbackInterface {
 
     private static final Logger logger = Logger.getLogger(
-        ChatClientImpl.class.getName()
-    );
+            ChatClientImpl.class.getName());
     private static final String SERVER_NAME = "ChatServer";
     private static final String SERVER_HOST = "localhost";
     private static final int RMI_PORT = 1099;
@@ -31,8 +30,7 @@ public class ChatClientImpl
     private UserDTO currentUser;
     private boolean connected = false;
 
-    private final List<ChatEventListener> eventListeners =
-        new CopyOnWriteArrayList<>();
+    private final List<ChatEventListener> eventListeners = new CopyOnWriteArrayList<>();
 
     public ChatClientImpl() throws RemoteException {
         super();
@@ -66,7 +64,7 @@ public class ChatClientImpl
     }
 
     public UserDTO login(String username, String password)
-        throws RemoteException {
+            throws RemoteException {
         if (!connected) {
             throw new IllegalStateException("Not connected to server");
         }
@@ -79,11 +77,10 @@ public class ChatClientImpl
     }
 
     public UserDTO createAccount(
-        String username,
-        String password,
-        String firstName,
-        String lastName
-    ) throws RemoteException {
+            String username,
+            String password,
+            String firstName,
+            String lastName) throws RemoteException {
         if (!connected) {
             throw new IllegalStateException("Not connected to server");
         }
@@ -110,7 +107,7 @@ public class ChatClientImpl
     }
 
     public List<UserDTO> searchUsers(String searchTerm, int limit)
-        throws RemoteException {
+            throws RemoteException {
         if (!connected) {
             throw new IllegalStateException("Not connected to server");
         }
@@ -128,7 +125,7 @@ public class ChatClientImpl
     }
 
     public DirectChatDTO createDirectChat(String otherUser)
-        throws RemoteException {
+            throws RemoteException {
         if (!connected || currentUser == null) {
             throw new IllegalStateException("Not connected or not logged in");
         }
@@ -137,7 +134,7 @@ public class ChatClientImpl
     }
 
     public DirectChatDTO getDirectChat(String otherUser)
-        throws RemoteException {
+            throws RemoteException {
         if (!connected || currentUser == null) {
             throw new IllegalStateException("Not connected or not logged in");
         }
@@ -154,22 +151,20 @@ public class ChatClientImpl
     }
 
     public ChatRoomDTO createGroupChat(
-        String roomName,
-        String description,
-        boolean isPrivate,
-        int maxMembers
-    ) throws RemoteException {
+            String roomName,
+            String description,
+            boolean isPrivate,
+            int maxMembers) throws RemoteException {
         if (!connected || currentUser == null) {
             throw new IllegalStateException("Not connected or not logged in");
         }
 
         return server.createGroupChat(
-            roomName,
-            currentUser.getUsername(),
-            description,
-            isPrivate,
-            maxMembers
-        );
+                roomName,
+                currentUser.getUsername(),
+                description,
+                isPrivate,
+                maxMembers);
     }
 
     public List<ChatRoomDTO> getPublicGroupChats() throws RemoteException {
@@ -205,7 +200,7 @@ public class ChatClientImpl
     }
 
     public List<ChatMemberDTO> getGroupChatMembers(int roomId)
-        throws RemoteException {
+            throws RemoteException {
         if (!connected) {
             throw new IllegalStateException("Not connected to server");
         }
@@ -213,8 +208,32 @@ public class ChatClientImpl
         return server.getGroupChatMembers(roomId);
     }
 
+    public void updateGroupName(int roomId, String newName) throws RemoteException {
+        if (!connected || currentUser == null) {
+            throw new IllegalStateException("Not connected or not logged in");
+        }
+
+        server.updateGroupName(roomId, newName);
+    }
+
+    public void addUserToGroup(int roomId, String username) throws RemoteException {
+        if (!connected || currentUser == null) {
+            throw new IllegalStateException("Not connected or not logged in");
+        }
+
+        server.addUserToGroup(roomId, username);
+    }
+
+    public void removeUserFromGroup(int roomId, String username) throws RemoteException {
+        if (!connected || currentUser == null) {
+            throw new IllegalStateException("Not connected or not logged in");
+        }
+
+        server.removeUserFromGroup(roomId, username);
+    }
+
     public void sendDirectMessage(int directChatId, String content)
-        throws RemoteException {
+            throws RemoteException {
         if (!connected || currentUser == null) {
             throw new IllegalStateException("Not connected or not logged in");
         }
@@ -229,7 +248,7 @@ public class ChatClientImpl
     }
 
     public void sendGroupMessage(int roomId, String content)
-        throws RemoteException {
+            throws RemoteException {
         if (!connected || currentUser == null) {
             throw new IllegalStateException("Not connected or not logged in");
         }
@@ -244,7 +263,7 @@ public class ChatClientImpl
     }
 
     public List<MessageDTO> getDirectChatMessages(int directChatId, int limit)
-        throws RemoteException {
+            throws RemoteException {
         if (!connected) {
             throw new IllegalStateException("Not connected to server");
         }
@@ -253,7 +272,7 @@ public class ChatClientImpl
     }
 
     public List<MessageDTO> getGroupChatMessages(int roomId, int limit)
-        throws RemoteException {
+            throws RemoteException {
         if (!connected) {
             throw new IllegalStateException("Not connected to server");
         }
@@ -262,7 +281,7 @@ public class ChatClientImpl
     }
 
     public void promoteToAdmin(String username, int roomId)
-        throws RemoteException {
+            throws RemoteException {
         if (!connected || currentUser == null) {
             throw new IllegalStateException("Not connected or not logged in");
         }
@@ -271,7 +290,7 @@ public class ChatClientImpl
     }
 
     public void demoteFromAdmin(String username, int roomId)
-        throws RemoteException {
+            throws RemoteException {
         if (!connected || currentUser == null) {
             throw new IllegalStateException("Not connected or not logged in");
         }
@@ -280,7 +299,7 @@ public class ChatClientImpl
     }
 
     public void editMessage(int messageId, String newContent)
-        throws RemoteException {
+            throws RemoteException {
         if (!connected || currentUser == null) {
             throw new IllegalStateException("Not connected or not logged in");
         }
@@ -304,66 +323,61 @@ public class ChatClientImpl
 
     @Override
     public void onDirectChatCreated(DirectChatDTO directChat)
-        throws RemoteException {
+            throws RemoteException {
         logger.info("Direct chat created: " + directChat.getId());
         notifyListeners(listener -> listener.onDirectChatCreated(directChat));
     }
 
     @Override
     public void onGroupChatCreated(ChatRoomDTO groupChat)
-        throws RemoteException {
+            throws RemoteException {
         logger.info("Group chat created: " + groupChat.getName());
         notifyListeners(listener -> listener.onGroupChatCreated(groupChat));
     }
 
     @Override
     public void onUserJoinedGroup(int roomId, UserDTO user, String invitedBy)
-        throws RemoteException {
+            throws RemoteException {
         logger.info("User " + user.getUsername() + " joined group " + roomId);
-        notifyListeners(listener ->
-            listener.onUserJoinedGroup(roomId, user, invitedBy)
-        );
+        notifyListeners(listener -> listener.onUserJoinedGroup(roomId, user, invitedBy));
     }
 
     @Override
     public void onUserLeftGroup(
-        int roomId,
-        UserDTO user,
-        boolean wasRemoved,
-        String removedBy
-    ) throws RemoteException {
+            int roomId,
+            UserDTO user,
+            boolean wasRemoved,
+            String removedBy) throws RemoteException {
         logger.info("User " + user.getUsername() + " left group " + roomId);
-        notifyListeners(listener ->
-            listener.onUserLeftGroup(roomId, user, wasRemoved, removedBy)
-        );
+        notifyListeners(listener -> listener.onUserLeftGroup(roomId, user, wasRemoved, removedBy));
     }
 
     @Override
     public void onPromotedToAdmin(int roomId, UserDTO user, String promotedBy)
-        throws RemoteException {
+            throws RemoteException {
         logger.info(
-            "User " +
-            user.getUsername() +
-            " promoted to admin in group " +
-            roomId
-        );
-        notifyListeners(listener ->
-            listener.onPromotedToAdmin(roomId, user, promotedBy)
-        );
+                "User " +
+                        user.getUsername() +
+                        " promoted to admin in group " +
+                        roomId);
+        notifyListeners(listener -> listener.onPromotedToAdmin(roomId, user, promotedBy));
     }
 
     @Override
     public void onDemotedFromAdmin(int roomId, UserDTO user, String demotedBy)
-        throws RemoteException {
+            throws RemoteException {
         logger.info(
-            "User " +
-            user.getUsername() +
-            " demoted from admin in group " +
-            roomId
-        );
-        notifyListeners(listener ->
-            listener.onDemotedFromAdmin(roomId, user, demotedBy)
-        );
+                "User " +
+                        user.getUsername() +
+                        " demoted from admin in group " +
+                        roomId);
+        notifyListeners(listener -> listener.onDemotedFromAdmin(roomId, user, demotedBy));
+    }
+
+    @Override
+    public void onGroupNameUpdated(int roomId, String newName) throws RemoteException {
+        logger.info("Group " + roomId + " name updated to: " + newName);
+        notifyListeners(listener -> listener.onGroupNameUpdated(roomId, newName));
     }
 
     @Override
@@ -374,11 +388,9 @@ public class ChatClientImpl
 
     @Override
     public void onMessageDeleted(int messageId, int roomId)
-        throws RemoteException {
+            throws RemoteException {
         logger.info("Message deleted: " + messageId + " in room " + roomId);
-        notifyListeners(listener ->
-            listener.onMessageDeleted(messageId, roomId)
-        );
+        notifyListeners(listener -> listener.onMessageDeleted(messageId, roomId));
     }
 
     @Override

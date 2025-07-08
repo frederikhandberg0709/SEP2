@@ -19,15 +19,16 @@ public interface ChatEventListener {
     void onUserJoinedGroup(int roomId, UserDTO user, String invitedBy);
 
     void onUserLeftGroup(
-        int roomId,
-        UserDTO user,
-        boolean wasRemoved,
-        String removedBy
-    );
+            int roomId,
+            UserDTO user,
+            boolean wasRemoved,
+            String removedBy);
 
     void onPromotedToAdmin(int roomId, UserDTO user, String promotedBy);
 
     void onDemotedFromAdmin(int roomId, UserDTO user, String demotedBy);
+
+    void onGroupNameUpdated(int roomId, String newName);
 
     void onDisconnect(String reason);
 }
