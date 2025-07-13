@@ -1,18 +1,12 @@
 package via.sep2.client.event;
 
-import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
-
-import via.sep2.shared.dto.ChatMemberDTO;
-import via.sep2.shared.dto.ChatRoomDTO;
-import via.sep2.shared.dto.MessageDTO;
 
 public class EventBus {
 
