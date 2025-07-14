@@ -12,8 +12,7 @@ import via.sep2.client.viewmodel.auth.LoginViewModel;
 public class LoginViewController {
 
     private static final Logger logger = Logger.getLogger(
-        LoginViewController.class.getName()
-    );
+            LoginViewController.class.getName());
 
     @FXML
     private TextField usernameField;
@@ -66,26 +65,25 @@ public class LoginViewController {
 
     private void setupDataBinding() {
         usernameField
-            .textProperty()
-            .bindBidirectional(viewModel.usernameProperty());
+                .textProperty()
+                .bindBidirectional(viewModel.usernameProperty());
         passwordField
-            .textProperty()
-            .bindBidirectional(viewModel.passwordProperty());
+                .textProperty()
+                .bindBidirectional(viewModel.passwordProperty());
 
         errorLabel.textProperty().bind(viewModel.errorMessageProperty());
 
         loginButton
-            .disableProperty()
-            .bind(
-                viewModel
-                    .isLoadingProperty()
-                    .or(viewModel.usernameProperty().isEmpty())
-                    .or(viewModel.passwordProperty().isEmpty())
-            );
+                .disableProperty()
+                .bind(
+                        viewModel
+                                .isLoadingProperty()
+                                .or(viewModel.usernameProperty().isEmpty())
+                                .or(viewModel.passwordProperty().isEmpty()));
 
         errorLabel
-            .visibleProperty()
-            .bind(viewModel.errorMessageProperty().isNotEmpty());
+                .visibleProperty()
+                .bind(viewModel.errorMessageProperty().isNotEmpty());
         errorLabel.managedProperty().bind(errorLabel.visibleProperty());
     }
 
@@ -98,36 +96,35 @@ public class LoginViewController {
         });
 
         usernameField
-            .textProperty()
-            .addListener((obs, oldVal, newVal) -> {
-                if (!newVal.equals(oldVal)) {
-                    viewModel.clearErrorMessage();
-                }
-            });
+                .textProperty()
+                .addListener((obs, oldVal, newVal) -> {
+                    if (!newVal.equals(oldVal)) {
+                        viewModel.clearErrorMessage();
+                    }
+                });
 
         passwordField
-            .textProperty()
-            .addListener((obs, oldVal, newVal) -> {
-                if (!newVal.equals(oldVal)) {
-                    viewModel.clearErrorMessage();
-                }
-            });
+                .textProperty()
+                .addListener((obs, oldVal, newVal) -> {
+                    if (!newVal.equals(oldVal)) {
+                        viewModel.clearErrorMessage();
+                    }
+                });
     }
 
     private void setupValidation() {
         viewModel
-            .loginSuccessfulProperty()
-            .addListener((obs, oldVal, newVal) -> {
-                if (newVal) {
-                    handleSuccessfulLogin();
-                }
-            });
+                .loginSuccessfulProperty()
+                .addListener((obs, oldVal, newVal) -> {
+                    if (newVal) {
+                        handleSuccessfulLogin();
+                    }
+                });
     }
 
     private void handleSuccessfulLogin() {
         logger.info(
-            "Login completed for user: " +
-            viewModel.getCurrentUser().getUsername()
-        );
+                "Login completed for user: " +
+                        viewModel.getCurrentUser().getUsername());
     }
 }
