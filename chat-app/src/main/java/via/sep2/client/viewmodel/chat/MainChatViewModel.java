@@ -102,6 +102,15 @@ public class MainChatViewModel {
     }
 
     private void setupSearchFilter() {
+        updateFilterPredicate();
+
+        searchText.addListener((obs, oldVal, newVal) -> {
+            updateFilterPredicate();
+            handleSearchTextChange(newVal);
+        });
+    }
+
+    private void updateFilterPredicate() {
         filteredChats.setPredicate(chatItem -> {
             String search = searchText.get();
             if (search == null)
@@ -119,11 +128,6 @@ public class MainChatViewModel {
             };
 
             return matchesSearch && matchesType;
-        });
-
-        searchText.addListener((obs, oldVal, newVal) -> {
-            filteredChats.setPredicate(filteredChats.getPredicate());
-            handleSearchTextChange(newVal);
         });
     }
 
@@ -526,7 +530,12 @@ public class MainChatViewModel {
     }
 
     public void setFilter(ChatFilter filter) {
+        logger.info("Setting filter from " + this.currentFilter + " to " + filter);
         this.currentFilter = filter;
+
+        updateFilterPredicate();
+
+        logger.info("Filter updated, filteredChats size: " + filteredChats.size());
     }
 
     public void clearSearch() {

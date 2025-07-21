@@ -326,6 +326,27 @@ public class MainChatViewController implements Initializable {
                         viewModel.setFilter(MainChatViewModel.ChatFilter.GROUP);
                     }
                 });
+
+        logger.info("Setting up filter listeners");
+
+        chatFilterGroup
+                .selectedToggleProperty()
+                .addListener((obs, oldToggle, newToggle) -> {
+                    logger.info("Filter toggle changed from " + oldToggle + " to " + newToggle);
+
+                    if (newToggle == allChatsFilter) {
+                        logger.info("Setting filter to ALL");
+                        viewModel.setFilter(MainChatViewModel.ChatFilter.ALL);
+                    } else if (newToggle == directChatsFilter) {
+                        logger.info("Setting filter to DIRECT");
+                        viewModel.setFilter(MainChatViewModel.ChatFilter.DIRECT);
+                    } else if (newToggle == groupChatsFilter) {
+                        logger.info("Setting filter to GROUP");
+                        viewModel.setFilter(MainChatViewModel.ChatFilter.GROUP);
+                    } else {
+                        logger.warning("Unknown toggle selected: " + newToggle);
+                    }
+                });
     }
 
     private void setupCreateGroupButton() {
