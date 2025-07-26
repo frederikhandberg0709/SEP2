@@ -73,7 +73,12 @@ public class GroupChatDAO {
             stmt.setString(2, username);
             stmt.setString(3, role.name());
             stmt.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
-            stmt.setString(5, invitedBy);
+
+            if (invitedBy != null) {
+                stmt.setString(5, invitedBy);
+            } else {
+                stmt.setNull(5, java.sql.Types.VARCHAR);
+            }
 
             stmt.executeUpdate();
         }
@@ -267,6 +272,18 @@ public class GroupChatDAO {
                         rs.getInt("max_members"));
             }
             return null;
+        }
+    }
+
+    public void updateGroupName(int roomId, String newName) throws SQLException {
+        String sql = "UPDATE group_chats SET name = ? WHERE id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, newName);
+            stmt.setInt(2, roomId);
+            stmt.executeUpdate();
         }
     }
 

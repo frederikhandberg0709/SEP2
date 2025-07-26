@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="via.sep2.client.view.chat.ConfirmationDialog">
+   <children>
+      <!-- Header -->
+      <HBox alignment="CENTER_LEFT" spacing="16.0" styleClass="dialog-header">
+         <children>
+            <Label fx:id="titleLabel" text="Confirm Action" styleClass="dialog-title">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+         </children>
+         <padding>
+            <Insets bottom="16.0" left="24.0" right="24.0" top="24.0" />
+         </padding>
+      </HBox>
+
+      <!-- Content -->
+      <VBox spacing="16.0" styleClass="dialog-content">
+         <children>
+            <Label fx:id="messageLabel" text="Are you sure you want to perform this action?" styleClass="dialog-message" wrapText="true">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+         </children>
+         <padding>
+            <Insets bottom="16.0" left="24.0" right="24.0" top="0.0" />
+         </padding>
+      </VBox>
+
+      <!-- Buttons -->
+      <HBox alignment="CENTER_RIGHT" spacing="12.0" styleClass="dialog-buttons">
+         <children>
+            <Button fx:id="cancelButton" onAction="#handleCancel" styleClass="secondary-button" text="Cancel" />
+            <Button fx:id="confirmButton" onAction="#handleConfirm" styleClass="danger-button" text="Confirm" />
+         </children>
+         <padding>
+            <Insets bottom="24.0" left="24.0" right="24.0" top="16.0" />
+         </padding>
+      </HBox>
+   </children>
+</VBox>

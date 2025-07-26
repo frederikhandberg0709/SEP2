@@ -1,0 +1,106 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36" version="28.0.6">
+  <diagram name="Page-1" id="To1AUIEfHjOGuK6YNLYO">
+    <mxGraphModel dx="1160" dy="1204" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-1" value="USERS" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="200" y="120" width="240" height="270" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-2" value="Users(id, username, first_name, last_name, password, created_at, updated_at)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="EZOGOqbj45NbZzM7vx-s-1">
+          <mxGeometry y="30" width="240" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-3" value="&lt;b&gt;PK: &lt;/b&gt;id" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="EZOGOqbj45NbZzM7vx-s-1">
+          <mxGeometry y="90" width="240" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-4" value="&lt;b&gt;AK: &lt;/b&gt;username" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="EZOGOqbj45NbZzM7vx-s-1">
+          <mxGeometry y="120" width="240" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-5" value="DIRECT_CHATS" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="440" y="120" width="240" height="270" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-6" value="DirectChats(id, user1_username, user2_username, created_timestamp, last_message_timestamp, user1_archived, user2_archived, user1_blocked, user2_blocked)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="EZOGOqbj45NbZzM7vx-s-5">
+          <mxGeometry y="30" width="240" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-7" value="&lt;b&gt;PK: &lt;/b&gt;id" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="EZOGOqbj45NbZzM7vx-s-5">
+          <mxGeometry y="120" width="240" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-8" value="&lt;b&gt;AK:&lt;/b&gt; (user1_username, user2_username)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="EZOGOqbj45NbZzM7vx-s-5">
+          <mxGeometry y="150" width="240" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-10" value="&lt;b&gt;FK: &lt;/b&gt;user1_username ref Users(username)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="EZOGOqbj45NbZzM7vx-s-5">
+          <mxGeometry y="190" width="240" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-11" value="&lt;b&gt;FK:&lt;/b&gt; user2_username ref Users(username)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="EZOGOqbj45NbZzM7vx-s-5">
+          <mxGeometry y="230" width="240" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-12" value="&lt;div&gt;GROUP_CHATS&lt;/div&gt;" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="390" width="240" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-13" value="GroupChats(id, name, creator_username, description, is_private, max_members, created_timestamp)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="EZOGOqbj45NbZzM7vx-s-12">
+          <mxGeometry y="30" width="240" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-14" value="&lt;b&gt;PK: &lt;/b&gt;id" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="EZOGOqbj45NbZzM7vx-s-12">
+          <mxGeometry y="90" width="240" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-15" value="&lt;b&gt;FK: &lt;/b&gt;creator_username ref Users(username)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="EZOGOqbj45NbZzM7vx-s-12">
+          <mxGeometry y="120" width="240" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-16" value="&lt;div&gt;GROUP_MEMBERS&lt;/div&gt;" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="440" y="390" width="240" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-17" value="GroupMembers(room_id, username, role, joined_timestamp, invited_by, is_muted, mute_expiry)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="EZOGOqbj45NbZzM7vx-s-16">
+          <mxGeometry y="30" width="240" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-18" value="&lt;b&gt;PK: (&lt;/b&gt;room_id, username)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="EZOGOqbj45NbZzM7vx-s-16">
+          <mxGeometry y="90" width="240" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-19" value="&lt;b&gt;FK: &lt;/b&gt;room_id ref GroupChats(id)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="EZOGOqbj45NbZzM7vx-s-16">
+          <mxGeometry y="120" width="240" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-20" value="&lt;b&gt;FK: &lt;/b&gt;username ref Users(username)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="EZOGOqbj45NbZzM7vx-s-16">
+          <mxGeometry y="150" width="240" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-21" value="&lt;b&gt;FK:&amp;nbsp;&lt;/b&gt;invited_by ref Users(username)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="EZOGOqbj45NbZzM7vx-s-16">
+          <mxGeometry y="180" width="240" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-22" value="MESSAGES" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="600" width="240" height="270" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-23" value="Messages(id, room_id, direct_chat_id, sender_username, content, timestamp, reply_to_message_id, is_edited, edited_timestamp, is_deleted)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="EZOGOqbj45NbZzM7vx-s-22">
+          <mxGeometry y="30" width="240" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-24" value="&lt;b&gt;PK:&lt;/b&gt; id" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="EZOGOqbj45NbZzM7vx-s-22">
+          <mxGeometry y="100" width="240" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-30" value="&lt;b&gt;FK:&lt;/b&gt; room_id ref GroupChats(id)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="EZOGOqbj45NbZzM7vx-s-22">
+          <mxGeometry y="130" width="240" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-31" value="&lt;b&gt;FK:&amp;nbsp;&lt;/b&gt;direct_chat_id ref DirectChats(id)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="EZOGOqbj45NbZzM7vx-s-22">
+          <mxGeometry y="160" width="240" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-32" value="&lt;b&gt;FK: &lt;/b&gt;sender_username ref Users(username)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="EZOGOqbj45NbZzM7vx-s-22">
+          <mxGeometry y="190" width="240" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-25" value="&lt;b&gt;FK: &lt;/b&gt;reply_to_message_id ref Messages(id)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="EZOGOqbj45NbZzM7vx-s-22">
+          <mxGeometry y="230" width="240" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-26" value="USER_SESSIONS" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="440" y="600" width="240" height="270" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-27" value="UserSessions(id, username, session_token, login_timestamp, last_activity, is_active)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="EZOGOqbj45NbZzM7vx-s-26">
+          <mxGeometry y="30" width="240" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-28" value="&lt;b&gt;PK: &lt;/b&gt;id" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="EZOGOqbj45NbZzM7vx-s-26">
+          <mxGeometry y="90" width="240" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-29" value="&lt;b&gt;AK:&lt;/b&gt; session_token" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="EZOGOqbj45NbZzM7vx-s-26">
+          <mxGeometry y="120" width="240" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="EZOGOqbj45NbZzM7vx-s-33" value="&lt;b&gt;FK: &lt;/b&gt;username ref Users(username)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="EZOGOqbj45NbZzM7vx-s-26">
+          <mxGeometry y="150" width="240" height="120" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

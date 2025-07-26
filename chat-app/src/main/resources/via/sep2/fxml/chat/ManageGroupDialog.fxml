@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="via.sep2.client.view.chat.group.ManageGroupDialog">
+   <children>
+      <!-- Header -->
+      <HBox alignment="CENTER_LEFT" spacing="16.0" styleClass="dialog-header">
+         <children>
+            <VBox>
+               <children>
+                  <Label text="Manage Group" styleClass="dialog-title">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="groupNameLabel" text="Group Name" styleClass="dialog-subtitle">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+            </VBox>
+         </children>
+         <padding>
+            <Insets bottom="16.0" left="24.0" right="24.0" top="24.0" />
+         </padding>
+      </HBox>
+
+      <!-- Content -->
+      <VBox spacing="16.0" styleClass="dialog-content" VBox.vgrow="ALWAYS">
+         <children>
+            <!-- Edit Group Name Section -->
+            <VBox spacing="8.0">
+               <children>
+                  <Label text="Group Name" styleClass="form-label">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <HBox spacing="12.0">
+                     <children>
+                        <TextField fx:id="editGroupNameField" styleClass="form-input" HBox.hgrow="ALWAYS" />
+                        <Button fx:id="updateNameButton" onAction="#handleUpdateName" styleClass="secondary-button" text="Update" disable="true" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            
+            <!-- Add User Section -->
+            <VBox spacing="8.0">
+               <children>
+                  <Label text="Add Member" styleClass="form-label">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <HBox spacing="12.0">
+                     <children>
+                        <TextField fx:id="addUserField" promptText="Enter username..." styleClass="form-input" HBox.hgrow="ALWAYS" />
+                        <Button fx:id="addUserButton" onAction="#handleAddUser" styleClass="primary-button" text="Add User" disable="true" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+
+            <!-- Members List -->
+            <VBox spacing="8.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <Label text="Members" styleClass="form-label">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <ListView fx:id="membersListView" styleClass="members-list" VBox.vgrow="ALWAYS" />
+               </children>
+            </VBox>
+
+            <!-- Error Label -->
+            <Label fx:id="errorLabel" styleClass="error-text" visible="false" wrapText="true" />
+         </children>
+         <padding>
+            <Insets bottom="16.0" left="24.0" right="24.0" top="0.0" />
+         </padding>
+      </VBox>
+
+      <!-- Buttons -->
+      <HBox alignment="CENTER_RIGHT" spacing="12.0" styleClass="dialog-buttons">
+         <children>
+            <Button fx:id="closeButton" onAction="#handleClose" styleClass="primary-button" text="Close" />
+         </children>
+         <padding>
+            <Insets bottom="24.0" left="24.0" right="24.0" top="16.0" />
+         </padding>
+      </HBox>
+   </children>
+</VBox>

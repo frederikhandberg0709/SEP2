@@ -51,12 +51,10 @@ public class RMIServerStarter {
 
     private static Registry getOrCreateRegistry() throws Exception {
         try {
-            // Try to create a new registry
             Registry registry = LocateRegistry.createRegistry(RMI_PORT);
             logger.info("Created RMI registry on port " + RMI_PORT);
             return registry;
         } catch (Exception e) {
-            // If creation fails, try to locate existing registry
             Registry registry = LocateRegistry.getRegistry(RMI_PORT);
             logger.info("Located existing RMI registry on port " + RMI_PORT);
             return registry;

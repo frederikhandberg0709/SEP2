@@ -18,8 +18,7 @@ import via.sep2.client.factory.ServiceFactory;
 public class SceneManager {
 
     private static final Logger logger = Logger.getLogger(
-        SceneManager.class.getName()
-    );
+            SceneManager.class.getName());
 
     private static SceneManager instance;
     private Stage primaryStage;
@@ -32,6 +31,9 @@ public class SceneManager {
     public static final String LOGIN_SCENE = "login";
     public static final String CREATE_ACCOUNT_SCENE = "create_account";
     public static final String MAIN_CHAT_SCENE = "main_chat";
+    public static final String CREATE_GROUP_DIALOG = "create_group_dialog";
+    public static final String MANAGE_GROUP_DIALOG = "manage_group_dialog";
+    public static final String CONFIRMATION_DIALOG = "confirmation_dialog";
 
     private SceneManager() {
         this.sceneCache = new HashMap<>();
@@ -54,12 +56,12 @@ public class SceneManager {
         this.primaryStage = primaryStage;
 
         ConnectionManager.getInstance()
-            .getEventBus()
-            .subscribe(LoginSuccessEvent.class, loginSuccessListener);
+                .getEventBus()
+                .subscribe(LoginSuccessEvent.class, loginSuccessListener);
 
         ConnectionManager.getInstance()
-            .getEventBus()
-            .subscribe(LogoutEvent.class, logoutListener);
+                .getEventBus()
+                .subscribe(LogoutEvent.class, logoutListener);
 
         primaryStage.setOnCloseRequest(event -> {
             cleanup();
@@ -71,20 +73,18 @@ public class SceneManager {
     private void handleLoginSuccess(LoginSuccessEvent event) {
         Platform.runLater(() -> {
             logger.info(
-                "Handling login success event for user: " +
-                (event.getUser() != null
-                        ? event.getUser().getUsername()
-                        : "unknown")
-            );
+                    "Handling login success event for user: " +
+                            (event.getUser() != null
+                                    ? event.getUser().getUsername()
+                                    : "unknown"));
 
             try {
                 showMainChat();
                 logger.info("Successfully navigated to main chat after login");
             } catch (Exception e) {
                 logger.severe(
-                    "Failed to navigate to main chat after login: " +
-                    e.getMessage()
-                );
+                        "Failed to navigate to main chat after login: " +
+                                e.getMessage());
                 showLogin();
             }
         });
@@ -93,11 +93,10 @@ public class SceneManager {
     private void handleLogout(LogoutEvent event) {
         Platform.runLater(() -> {
             logger.info(
-                "Handling logout event for user: " +
-                (event.getUser() != null
-                        ? event.getUser().getUsername()
-                        : "unknown")
-            );
+                    "Handling logout event for user: " +
+                            (event.getUser() != null
+                                    ? event.getUser().getUsername()
+                                    : "unknown"));
 
             clearUserSpecificScenes();
 
@@ -113,11 +112,10 @@ public class SceneManager {
 
     public void showLogin() {
         showScene(
-            LOGIN_SCENE,
-            "/via/sep2/fxml/auth/LoginView.fxml",
-            "Login - Chat App",
-            "/via/sep2/css/auth.css"
-        );
+                LOGIN_SCENE,
+                "/via/sep2/fxml/auth/LoginView.fxml",
+                "Login - Chat App",
+                "/via/sep2/css/auth.css");
 
         primaryStage.setMinWidth(400);
         primaryStage.setMinHeight(500);
@@ -130,11 +128,10 @@ public class SceneManager {
 
     public void showCreateAccount() {
         showScene(
-            CREATE_ACCOUNT_SCENE,
-            "/via/sep2/fxml/auth/CreateAccountView.fxml",
-            "Create Account - Chat App",
-            "/via/sep2/css/auth.css"
-        );
+                CREATE_ACCOUNT_SCENE,
+                "/via/sep2/fxml/auth/CreateAccountView.fxml",
+                "Create Account - Chat App",
+                "/via/sep2/css/auth.css");
 
         primaryStage.setMinWidth(500);
         primaryStage.setMinHeight(650);
@@ -148,41 +145,106 @@ public class SceneManager {
     public void showMainChat() {
         if (isUserAuthenticated()) {
             showScene(
-                MAIN_CHAT_SCENE,
-                "/via/sep2/fxml/chat/MainChatView.fxml",
-                "Chat - Logged in",
-                "/via/sep2/css/chat.css",
-                "/via/sep2/css/user-search.css"
-            );
+                    MAIN_CHAT_SCENE,
+                    "/via/sep2/fxml/chat/MainChatView.fxml",
+                    "Chat - Logged in",
+                    "/via/sep2/css/chat.css",
+                    "/via/sep2/css/user-search.css");
 
             primaryStage.setMinWidth(800);
             primaryStage.setMinHeight(600);
             primaryStage.setMaxWidth(Double.MAX_VALUE);
             primaryStage.setMaxHeight(Double.MAX_VALUE);
 
-            if (
-                primaryStage.getWidth() < 800 || primaryStage.getHeight() < 600
-            ) {
+            if (primaryStage.getWidth() < 800 || primaryStage.getHeight() < 600) {
                 primaryStage.setWidth(1200);
                 primaryStage.setHeight(800);
             }
         } else {
             logger.warning(
-                "Attempted to show main chat without authentication"
-            );
+                    "Attempted to show main chat without authentication");
             showLogin();
+        }
+    }
+
+    public Stage showCreateGroupDialog() {
+        return showDialog(
+                CREATE_GROUP_DIALOG,
+                "/via/sep2/fxml/chat/CreateGroupDialog.fxml",
+                "Create Group Chat",
+                false,
+                500,
+                600,
+                "/via/sep2/css/chat.css");
+    }
+
+    public Stage showManageGroupDialog(String groupName) {
+        return showDialog(
+                MANAGE_GROUP_DIALOG,
+                "/via/sep2/fxml/chat/ManageGroupDialog.fxml",
+                "Manage Group - " + groupName,
+                true,
+                500,
+                400,
+                "/via/sep2/css/chat.css");
+    }
+
+    public Stage showConfirmationDialog(String title) {
+        return showDialog(
+                CONFIRMATION_DIALOG,
+                "/via/sep2/fxml/chat/ConfirmationDialog.fxml",
+                title,
+                false,
+                400,
+                200,
+                "/via/sep2/css/chat.css");
+    }
+
+    private Stage showDialog(
+            String sceneId,
+            String fxmlPath,
+            String title,
+            boolean resizable,
+            double width,
+            double height,
+            String... stylesheetPaths) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent root = loader.load();
+
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle(title);
+            dialogStage.initModality(javafx.stage.Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            dialogStage.setResizable(resizable);
+
+            Scene scene = new Scene(root);
+            loadStylesheet(scene, stylesheetPaths);
+
+            dialogStage.setScene(scene);
+            dialogStage.setWidth(width);
+            dialogStage.setHeight(height);
+
+            // Store the controller for retrieval
+            controllerCache.put(sceneId, loader.getController());
+
+            return dialogStage;
+
+        } catch (IOException e) {
+            logger.severe("Error loading dialog: " + sceneId + " - " + e.getMessage());
+            e.printStackTrace();
+            return null;
         }
     }
 
     private boolean isUserAuthenticated() {
         try {
             return ServiceFactory.getInstance()
-                .getService(via.sep2.client.service.AuthService.class)
-                .isAuthenticated();
+                    .getService(via.sep2.client.service.AuthService.class)
+                    .isAuthenticated();
         } catch (Exception e) {
             logger.warning(
-                "Could not check authentication status: " + e.getMessage()
-            );
+                    "Could not check authentication status: " + e.getMessage());
             return false;
         }
     }
@@ -191,26 +253,24 @@ public class SceneManager {
         logger.info("Cleaning up SceneManager");
 
         ConnectionManager.getInstance()
-            .getEventBus()
-            .unsubscribe(LoginSuccessEvent.class, loginSuccessListener);
+                .getEventBus()
+                .unsubscribe(LoginSuccessEvent.class, loginSuccessListener);
 
         ConnectionManager.getInstance()
-            .getEventBus()
-            .unsubscribe(LogoutEvent.class, logoutListener);
+                .getEventBus()
+                .unsubscribe(LogoutEvent.class, logoutListener);
 
         clearCache();
     }
 
     private Scene getScene(
-        String sceneId,
-        String fxmlPath,
-        String... stylesheetPaths
-    ) throws IOException {
+            String sceneId,
+            String fxmlPath,
+            String... stylesheetPaths) throws IOException {
         Scene scene = sceneCache.get(sceneId);
         if (scene == null) {
             FXMLLoader loader = new FXMLLoader(
-                getClass().getResource(fxmlPath)
-            );
+                    getClass().getResource(fxmlPath));
             Parent root = loader.load();
             scene = new Scene(root);
 
@@ -243,18 +303,17 @@ public class SceneManager {
         for (String cssPath : stylesheetPaths) {
             try {
                 String fullPath = getClass()
-                    .getResource(cssPath)
-                    .toExternalForm();
+                        .getResource(cssPath)
+                        .toExternalForm();
                 if (!scene.getStylesheets().contains(fullPath)) {
                     scene.getStylesheets().add(fullPath);
                 }
             } catch (Exception e) {
                 System.out.println(
-                    "Could not load CSS file: " +
-                    cssPath +
-                    " - " +
-                    e.getMessage()
-                );
+                        "Could not load CSS file: " +
+                                cssPath +
+                                " - " +
+                                e.getMessage());
             }
         }
     }
@@ -272,11 +331,10 @@ public class SceneManager {
     }
 
     public void showScene(
-        String sceneId,
-        String fxmlPath,
-        String title,
-        String... stylesheetPaths
-    ) {
+            String sceneId,
+            String fxmlPath,
+            String title,
+            String... stylesheetPaths) {
         try {
             Scene scene = getScene(sceneId, fxmlPath, stylesheetPaths);
             primaryStage.setScene(scene);
@@ -289,14 +347,13 @@ public class SceneManager {
     }
 
     public void showScene(
-        String sceneId,
-        String fxmlPath,
-        String title,
-        boolean resizable,
-        double width,
-        double height,
-        String... stylesheetPaths
-    ) {
+            String sceneId,
+            String fxmlPath,
+            String title,
+            boolean resizable,
+            double width,
+            double height,
+            String... stylesheetPaths) {
         try {
             Scene scene = getScene(sceneId, fxmlPath, stylesheetPaths);
             primaryStage.setScene(scene);

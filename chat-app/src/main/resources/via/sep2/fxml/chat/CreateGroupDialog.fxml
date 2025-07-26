@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="via.sep2.client.view.chat.group.CreateGroupChatDialog">
+   <children>
+      <!-- Header -->
+      <HBox alignment="CENTER_LEFT" spacing="16.0" styleClass="dialog-header">
+         <children>
+            <Label text="Create Group Chat" styleClass="dialog-title">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+         </children>
+         <padding>
+            <Insets bottom="16.0" left="24.0" right="24.0" top="24.0" />
+         </padding>
+      </HBox>
+
+      <!-- Content -->
+      <VBox spacing="16.0" styleClass="dialog-content">
+         <children>
+            <!-- Group Name -->
+            <VBox spacing="8.0">
+               <children>
+                  <Label text="Group Name *" styleClass="form-label">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="groupNameField" promptText="Enter group name..." styleClass="form-input" />
+               </children>
+            </VBox>
+
+            <!-- Description -->
+            <VBox spacing="8.0">
+               <children>
+                  <Label text="Description (Optional)" styleClass="form-label">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <TextArea fx:id="descriptionArea" prefRowCount="3" promptText="What's this group about?" styleClass="form-input" wrapText="true" />
+               </children>
+            </VBox>
+
+            <!-- Settings -->
+            <VBox spacing="12.0">
+               <children>
+                  <Label text="Group Settings" styleClass="form-label">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+
+                  <CheckBox fx:id="privateCheckBox" text="Private Group" styleClass="form-checkbox">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </CheckBox>
+
+                  <HBox alignment="CENTER_LEFT" spacing="12.0">
+                     <children>
+                        <Label text="Max Members:" styleClass="form-label">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <Spinner fx:id="maxMembersSpinner" prefWidth="120.0" styleClass="form-spinner" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+
+            <!-- Error Label -->
+            <Label fx:id="errorLabel" styleClass="error-text" visible="false" wrapText="true" />
+         </children>
+         <padding>
+            <Insets bottom="16.0" left="24.0" right="24.0" top="0.0" />
+         </padding>
+      </VBox>
+
+      <!-- Buttons -->
+      <HBox alignment="CENTER_RIGHT" spacing="12.0" styleClass="dialog-buttons">
+         <children>
+            <Button fx:id="cancelButton" onAction="#handleCancel" styleClass="secondary-button" text="Cancel" />
+            <Button fx:id="createButton" onAction="#handleCreate" styleClass="primary-button" text="Create Group" />
+         </children>
+         <padding>
+            <Insets bottom="24.0" left="24.0" right="24.0" top="16.0" />
+         </padding>
+      </HBox>
+   </children>
+</VBox>

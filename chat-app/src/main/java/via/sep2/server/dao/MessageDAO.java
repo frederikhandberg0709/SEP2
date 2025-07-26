@@ -72,9 +72,9 @@ public class MessageDAO {
     public List<MessageDTO> getGroupChatMessages(int roomId, int limit)
         throws SQLException {
         String sql = """
-            SELECT id, room_id, sender_username, content, timestamp
+            SELECT id, room_id, sender_username, content, timestamp, is_edited, edited_timestamp, is_deleted
             FROM messages
-            WHERE room_id = ?
+            WHERE room_id = ? AND is_deleted = false
             ORDER BY timestamp DESC
             LIMIT ?
             """;
@@ -85,9 +85,9 @@ public class MessageDAO {
     public List<MessageDTO> getDirectChatMessages(int directChatId, int limit)
         throws SQLException {
         String sql = """
-            SELECT id, direct_chat_id as room_id, sender_username, content, timestamp
+            SELECT id, direct_chat_id as room_id, sender_username, content, timestamp, is_edited, edited_timestamp, is_deleted
             FROM messages
-            WHERE direct_chat_id = ?
+            WHERE direct_chat_id = ? AND is_deleted = false
             ORDER BY timestamp DESC
             LIMIT ?
             """;
@@ -109,16 +109,16 @@ public class MessageDAO {
         String sql;
         if (isDirectChat) {
             sql = """
-                SELECT id, direct_chat_id as room_id, sender_username, content, timestamp
+                SELECT id, direct_chat_id as room_id, sender_username, content, timestamp, is_edited, edited_timestamp, is_deleted
                 FROM messages
-                WHERE direct_chat_id = ? AND timestamp > ?
+                WHERE direct_chat_id = ? AND timestamp > ? AND is_deleted = false
                 ORDER BY timestamp ASC
                 """;
         } else {
             sql = """
-                SELECT id, room_id, sender_username, content, timestamp
+                SELECT id, room_id, sender_username, content, timestamp, is_edited, edited_timestamp, is_deleted
                 FROM messages
-                WHERE room_id = ? AND timestamp > ?
+                WHERE room_id = ? AND timestamp > ? AND is_deleted = false
                 ORDER BY timestamp ASC
                 """;
         }
@@ -145,7 +145,7 @@ public class MessageDAO {
         return messages;
     }
 
-    /*public void editMessage(
+    public void editMessage(
         int messageId,
         String newContent,
         String editorUsername
@@ -170,9 +170,9 @@ public class MessageDAO {
 
             stmt.executeUpdate();
         }
-        }*/
+    }
 
-    /*public void deleteMessage(int messageId, String deleterUsername)
+    public void deleteMessage(int messageId, String deleterUsername)
         throws SQLException {
         if (!canUserDeleteMessage(messageId, deleterUsername)) {
             throw new SQLException(
@@ -189,11 +189,11 @@ public class MessageDAO {
             stmt.setInt(1, messageId);
             stmt.executeUpdate();
         }
-    }*/
+    }
 
     public MessageDTO getMessageById(int messageId) throws SQLException {
         String sql = """
-            SELECT id, COALESCE(room_id, -direct_chat_id) as room_id, sender_username, content, timestamp
+            SELECT id, COALESCE(room_id, -direct_chat_id) as room_id, sender_username, content, timestamp, is_edited, edited_timestamp, is_deleted
             FROM messages WHERE id = ?
             """;
 
@@ -211,7 +211,7 @@ public class MessageDAO {
         }
     }
 
-    /*private boolean canUserEditMessage(int messageId, String username)
+    private boolean canUserEditMessage(int messageId, String username)
         throws SQLException {
         String sql =
             "SELECT sender_username FROM messages WHERE id = ? AND is_deleted = false";
@@ -228,7 +228,26 @@ public class MessageDAO {
             }
             return false;
         }
-    }*/
+    }
+
+    private boolean canUserDeleteMessage(int messageId, String username)
+        throws SQLException {
+        String sql =
+            "SELECT sender_username FROM messages WHERE id = ? AND is_deleted = false";
+
+        try (
+            Connection conn = DatabaseConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+        ) {
+            stmt.setInt(1, messageId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return username.equals(rs.getString("sender_username"));
+            }
+            return false;
+        }
+    }
 
     /*private boolean canUserDeleteMessage(int messageId, String username)
         throws SQLException {
@@ -291,10 +310,10 @@ public class MessageDAO {
         message.setSenderUsername(rs.getString("sender_username"));
         message.setContent(rs.getString("content"));
         message.setTimestamp(rs.getTimestamp("timestamp").getTime());
-        // message.setEdited(rs.getBoolean("is_edited"));
+        message.setEdited(rs.getBoolean("is_edited"));
 
-        // Timestamp editedTs = rs.getTimestamp("edited_timestamp");
-        // message.setEditedTimestamp(editedTs != null ? editedTs.getTime() : 0);
+        Timestamp editedTs = rs.getTimestamp("edited_timestamp");
+        message.setEditedTimestamp(editedTs != null ? editedTs.getTime() : 0);
 
         // message.setDeleted(rs.getBoolean("is_deleted"));
 

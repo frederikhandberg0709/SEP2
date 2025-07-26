@@ -14,8 +14,8 @@ import via.sep2.shared.dto.UserDTO;
 public class ChatService {
 
     private static final Logger logger = Logger.getLogger(
-        ChatService.class.getName()
-    );
+            ChatService.class.getName());
+
     private final ConnectionManager connectionManager;
 
     public ChatService() {
@@ -28,14 +28,13 @@ public class ChatService {
     }
 
     public CompletableFuture<List<UserDTO>> searchUsersAsync(
-        String searchTerm
-    ) {
+            String searchTerm) {
         return CompletableFuture.supplyAsync(() -> {
             validateConnected();
             try {
                 return connectionManager
-                    .getRmiClient()
-                    .searchUsers(searchTerm, 10);
+                        .getRmiClient()
+                        .searchUsers(searchTerm, 10);
             } catch (RemoteException e) {
                 throw new RuntimeException("Failed to search users", e);
             }
@@ -55,15 +54,14 @@ public class ChatService {
     }
 
     public CompletableFuture<DirectChatDTO> createDirectChatAsync(
-        String otherUser
-    ) {
+            String otherUser) {
         return CompletableFuture.supplyAsync(() -> {
             validateAuthenticated();
             try {
                 logger.info("Creating direct chat with user: " + otherUser);
                 return connectionManager
-                    .getRmiClient()
-                    .createDirectChat(otherUser);
+                        .getRmiClient()
+                        .createDirectChat(otherUser);
             } catch (RemoteException e) {
                 throw new RuntimeException("Failed to create direct chat", e);
             }
@@ -71,14 +69,13 @@ public class ChatService {
     }
 
     public CompletableFuture<DirectChatDTO> getDirectChatAsync(
-        String otherUser
-    ) {
+            String otherUser) {
         return CompletableFuture.supplyAsync(() -> {
             validateAuthenticated();
             try {
                 return connectionManager
-                    .getRmiClient()
-                    .getDirectChat(otherUser);
+                        .getRmiClient()
+                        .getDirectChat(otherUser);
             } catch (RemoteException e) {
                 throw new RuntimeException("Failed to get direct chat", e);
             }
@@ -86,36 +83,33 @@ public class ChatService {
     }
 
     public CompletableFuture<List<MessageDTO>> getDirectChatMessagesAsync(
-        int directChatId,
-        int limit
-    ) {
+            int directChatId,
+            int limit) {
         return CompletableFuture.supplyAsync(() -> {
             validateConnected();
             try {
                 return connectionManager
-                    .getRmiClient()
-                    .getDirectChatMessages(directChatId, limit);
+                        .getRmiClient()
+                        .getDirectChatMessages(directChatId, limit);
             } catch (RemoteException e) {
                 throw new RuntimeException(
-                    "Failed to get direct chat messages",
-                    e
-                );
+                        "Failed to get direct chat messages",
+                        e);
             }
         });
     }
 
     public CompletableFuture<Void> sendDirectMessageAsync(
-        int directChatId,
-        String content
-    ) {
+            int directChatId,
+            String content) {
         return CompletableFuture.runAsync(() -> {
             validateAuthenticated();
             validateCanSendMessage();
             try {
                 logger.info("Sending direct message to chat: " + directChatId);
                 connectionManager
-                    .getRmiClient()
-                    .sendDirectMessage(directChatId, content);
+                        .getRmiClient()
+                        .sendDirectMessage(directChatId, content);
             } catch (RemoteException e) {
                 throw new RuntimeException("Failed to send direct message", e);
             }
@@ -123,6 +117,17 @@ public class ChatService {
     }
 
     // Group Chat Operations
+    public CompletableFuture<ChatRoomDTO> getGroupChatByIdAsync(int roomId) {
+        return CompletableFuture.supplyAsync(() -> {
+            validateConnected();
+            try {
+                return connectionManager.getRmiClient().getGroupChatById(roomId);
+            } catch (RemoteException e) {
+                throw new RuntimeException("Failed to get group chat", e);
+            }
+        });
+    }
+
     public CompletableFuture<List<ChatRoomDTO>> getPublicGroupChatsAsync() {
         return CompletableFuture.supplyAsync(() -> {
             validateConnected();
@@ -130,9 +135,8 @@ public class ChatService {
                 return connectionManager.getRmiClient().getPublicGroupChats();
             } catch (RemoteException e) {
                 throw new RuntimeException(
-                    "Failed to get public group chats",
-                    e
-                );
+                        "Failed to get public group chats",
+                        e);
             }
         });
     }
@@ -149,24 +153,22 @@ public class ChatService {
     }
 
     public CompletableFuture<ChatRoomDTO> createGroupChatAsync(
-        String roomName,
-        String description,
-        boolean isPrivate,
-        int maxMembers
-    ) {
+            String roomName,
+            String description,
+            boolean isPrivate,
+            int maxMembers) {
         return CompletableFuture.supplyAsync(() -> {
             validateAuthenticated();
             validateCanCreateGroup();
             try {
                 logger.info("Creating group chat: " + roomName);
                 return connectionManager
-                    .getRmiClient()
-                    .createGroupChat(
-                        roomName,
-                        description,
-                        isPrivate,
-                        maxMembers
-                    );
+                        .getRmiClient()
+                        .createGroupChat(
+                                roomName,
+                                description,
+                                isPrivate,
+                                maxMembers);
             } catch (RemoteException e) {
                 throw new RuntimeException("Failed to create group chat", e);
             }
@@ -199,36 +201,33 @@ public class ChatService {
     }
 
     public CompletableFuture<List<MessageDTO>> getGroupChatMessagesAsync(
-        int roomId,
-        int limit
-    ) {
+            int roomId,
+            int limit) {
         return CompletableFuture.supplyAsync(() -> {
             validateConnected();
             try {
                 return connectionManager
-                    .getRmiClient()
-                    .getGroupChatMessages(roomId, limit);
+                        .getRmiClient()
+                        .getGroupChatMessages(roomId, limit);
             } catch (RemoteException e) {
                 throw new RuntimeException(
-                    "Failed to get group chat messages",
-                    e
-                );
+                        "Failed to get group chat messages",
+                        e);
             }
         });
     }
 
     public CompletableFuture<Void> sendGroupMessageAsync(
-        int roomId,
-        String content
-    ) {
+            int roomId,
+            String content) {
         return CompletableFuture.runAsync(() -> {
             validateAuthenticated();
             validateCanSendMessage();
             try {
                 logger.info("Sending group message to room: " + roomId);
                 connectionManager
-                    .getRmiClient()
-                    .sendGroupMessage(roomId, content);
+                        .getRmiClient()
+                        .sendGroupMessage(roomId, content);
             } catch (RemoteException e) {
                 throw new RuntimeException("Failed to send group message", e);
             }
@@ -236,67 +235,136 @@ public class ChatService {
     }
 
     public CompletableFuture<List<ChatMemberDTO>> getGroupChatMembersAsync(
-        int roomId
-    ) {
+            int roomId) {
         return CompletableFuture.supplyAsync(() -> {
             validateConnected();
             try {
                 return connectionManager
-                    .getRmiClient()
-                    .getGroupChatMembers(roomId);
+                        .getRmiClient()
+                        .getGroupChatMembers(roomId);
             } catch (RemoteException e) {
                 throw new RuntimeException(
-                    "Failed to get group chat members",
-                    e
-                );
+                        "Failed to get group chat members",
+                        e);
+            }
+        });
+    }
+
+    // Edit and delete messages
+    public CompletableFuture<Void> editMessageAsync(
+            int messageId,
+            String newContent) {
+        return CompletableFuture.runAsync(() -> {
+            validateAuthenticated();
+            try {
+                logger.info("Editing message: " + messageId);
+                connectionManager
+                        .getRmiClient()
+                        .editMessage(messageId, newContent);
+            } catch (RemoteException e) {
+                throw new RuntimeException("Failed to edit message", e);
+            }
+        });
+    }
+
+    public CompletableFuture<Void> deleteMessageAsync(int messageId) {
+        return CompletableFuture.runAsync(() -> {
+            validateAuthenticated();
+            try {
+                logger.info("Deleting message: " + messageId);
+                connectionManager.getRmiClient().deleteMessage(messageId);
+            } catch (RemoteException e) {
+                throw new RuntimeException("Failed to delete message", e);
             }
         });
     }
 
     // Admin Operations
     public CompletableFuture<Void> promoteToAdminAsync(
-        String username,
-        int roomId
-    ) {
+            String username,
+            int roomId) {
         return CompletableFuture.runAsync(() -> {
             validateAuthenticated();
             try {
                 logger.info(
-                    "Promoting user " + username + " to admin in room " + roomId
-                );
+                        "Promoting user " + username + " to admin in room " + roomId);
                 connectionManager
-                    .getRmiClient()
-                    .promoteToAdmin(username, roomId);
+                        .getRmiClient()
+                        .promoteToAdmin(username, roomId);
             } catch (RemoteException e) {
                 throw new RuntimeException(
-                    "Failed to promote user to admin",
-                    e
-                );
+                        "Failed to promote user to admin",
+                        e);
             }
         });
     }
 
     public CompletableFuture<Void> demoteFromAdminAsync(
-        String username,
-        int roomId
-    ) {
+            String username,
+            int roomId) {
         return CompletableFuture.runAsync(() -> {
             validateAuthenticated();
             try {
                 logger.info(
-                    "Demoting user " +
-                    username +
-                    " from admin in room " +
-                    roomId
-                );
+                        "Demoting user " +
+                                username +
+                                " from admin in room " +
+                                roomId);
                 connectionManager
-                    .getRmiClient()
-                    .demoteFromAdmin(username, roomId);
+                        .getRmiClient()
+                        .demoteFromAdmin(username, roomId);
             } catch (RemoteException e) {
                 throw new RuntimeException(
-                    "Failed to demote user from admin",
-                    e
-                );
+                        "Failed to demote user from admin",
+                        e);
+            }
+        });
+    }
+
+    public CompletableFuture<Void> updateGroupNameAsync(
+            int roomId,
+            String newName) {
+        return CompletableFuture.runAsync(() -> {
+            validateAuthenticated();
+            try {
+                logger.info("Updating group name for room " + roomId + " to: " + newName);
+                connectionManager
+                        .getRmiClient()
+                        .updateGroupName(roomId, newName);
+            } catch (RemoteException e) {
+                throw new RuntimeException("Failed to update group name", e);
+            }
+        });
+    }
+
+    public CompletableFuture<Void> addUserToGroupAsync(
+            int roomId,
+            String username) {
+        return CompletableFuture.runAsync(() -> {
+            validateAuthenticated();
+            try {
+                logger.info("Adding user " + username + " to room " + roomId);
+                connectionManager
+                        .getRmiClient()
+                        .addUserToGroup(roomId, username);
+            } catch (RemoteException e) {
+                throw new RuntimeException("Failed to add user to group", e);
+            }
+        });
+    }
+
+    public CompletableFuture<Void> removeUserFromGroupAsync(
+            int roomId,
+            String username) {
+        return CompletableFuture.runAsync(() -> {
+            validateAuthenticated();
+            try {
+                logger.info("Removing user " + username + " from room " + roomId);
+                connectionManager
+                        .getRmiClient()
+                        .removeUserFromGroup(roomId, username);
+            } catch (RemoteException e) {
+                throw new RuntimeException("Failed to remove user from group", e);
             }
         });
     }
@@ -318,27 +386,24 @@ public class ChatService {
     private void validateCanSendMessage() {
         if (!connectionManager.getSessionState().canSendMessage()) {
             throw new IllegalStateException(
-                "Cannot send message in current state: " +
-                connectionManager.getSessionState().getStateName()
-            );
+                    "Cannot send message in current state: " +
+                            connectionManager.getSessionState().getStateName());
         }
     }
 
     private void validateCanJoinGroup() {
         if (!connectionManager.getSessionState().canJoinGroup()) {
             throw new IllegalStateException(
-                "Cannot join group in current state: " +
-                connectionManager.getSessionState().getStateName()
-            );
+                    "Cannot join group in current state: " +
+                            connectionManager.getSessionState().getStateName());
         }
     }
 
     private void validateCanCreateGroup() {
         if (!connectionManager.getSessionState().canCreateGroup()) {
             throw new IllegalStateException(
-                "Cannot create group in current state: " +
-                connectionManager.getSessionState().getStateName()
-            );
+                    "Cannot create group in current state: " +
+                            connectionManager.getSessionState().getStateName());
         }
     }
 }
