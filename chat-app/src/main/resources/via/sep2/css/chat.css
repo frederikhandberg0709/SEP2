@@ -121,14 +121,14 @@
 }
 
 .form-spinner {
-  -fx-background-color: #f0f2f5;
+  -fx-background-color: #e2e6ec;
   -fx-background-radius: 8;
   -fx-border-radius: 8;
 }
 
 /* Search Input */
 .search-input {
-  -fx-background-color: #f0f2f5;
+  -fx-background-color: #e2e6ec;
   -fx-background-radius: 25;
   -fx-border-radius: 25;
   -fx-padding: 12 16 12 16;
@@ -136,15 +136,19 @@
   -fx-border-color: transparent;
 }
 
+.search-input:hover {
+  -fx-background-color: #d6d9de;
+}
+
 .search-input:focused {
-  -fx-background-color: #e4e6ea;
+  -fx-background-color: #d6d9de;
   -fx-border-color: #0084ff;
   -fx-border-width: 2;
 }
 
 /* Filter Buttons */
 .filter-btn {
-  -fx-background-color: #f0f2f5;
+  -fx-background-color: #e2e6ec;
   -fx-background-radius: 20;
   -fx-border-radius: 20;
   -fx-padding: 8 16 8 16;
@@ -155,7 +159,7 @@
 }
 
 .filter-btn:hover {
-  -fx-background-color: #e4e6ea;
+  -fx-background-color: #d6d9de;
 }
 
 .filter-btn:selected {
@@ -447,14 +451,15 @@
 }
 
 /* Create group button */
-.create-group-button {
+.create-group-btn {
   -fx-background-color: #0084ff;
   -fx-text-fill: white;
   -fx-background-radius: 25;
   -fx-border-radius: 50px;
-  -fx-padding: 12 20 12 20;
+  -fx-height: 25px;
+  -fx-width: 25px;
   -fx-font-weight: bold;
-  -fx-font-size: 14;
+  -fx-font-size: 17;
   -fx-border-color: transparent;
 }
 

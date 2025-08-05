@@ -92,9 +92,9 @@
                         text="Group"
                         toggleGroup="$chatFilterGroup"
                     />
-                    <VBox spacing="8.0">
+                    <VBox>
                         <padding>
-                            <Insets left="20.0" right="20.0" bottom="16.0" />
+                            <Insets left="20.0" />
                         </padding>
                         <Button
                             fx:id="createGroupButton"
