@@ -1,5 +1,11 @@
 # SEP2 – Chat app
 
+Semester Project 2 *(SEP2)* was about building a client/server application using JavaFX and either Sockets or RMI. We must also implement a relational database.
+
+In my group, we decided to build a chat application with functionality to write direct messages between two users, but also allow users to create group chats and invite other users to their group, so that multiple users can chat together.
+
+In a group chat, each participant is assigned a role. By default, a participant is assigned the `MEMBER` role when joining a group. A participant with the `MEMBER` role can be promoted to `ADMIN` by either the `CREATOR` or another `ADMIN`. However, only the `CREATOR` can demote an `ADMIN` to a normal `MEMBER`. The user who created the group is assigned the `CREATOR` role, which is a permanent role.
+
 ## Requirements
 
 ### Functional
