@@ -6,6 +6,18 @@ In my group, we decided to build a chat application with functionality to write 
 
 In a group chat, each participant is assigned a role. By default, a participant is assigned the `MEMBER` role when joining a group. A participant with the `MEMBER` role can be promoted to `ADMIN` by either the `CREATOR` or another `ADMIN`. However, only the `CREATOR` can demote an `ADMIN` to a normal `MEMBER`. The user who created the group is assigned the `CREATOR` role, which is a permanent role.
 
+## Project Structure
+
+Our system consists of a single Java project that uses JavaFX and Maven, along with a number of dependencies.
+
+Below is a list of the more important dependencies and a description of why we chose to use them:
+
+* `javafx-controls`: This dependency contains components that handle user interaction such as buttons, text inputs, labels, menus, etc.
+* `javafx-fxml`: Allows us to define our UI in FXML files, which is an XML-based markup language for JavaFX.
+* `postgresql`: As already stated, one of the requirements for this semester project, was to use a relational database. We decided to use PostgreSQL as it's a popular choice and one of the SQL languages we learned in our DBS1 class.
+* `lombok`: Lombok is super convenient for automatically generating boilerplate code such as constructors, getters, and setters. Simply add an annotation like `@Data` above a class name, and Lombok will take care of the boilerplate code mentioned earlier.
+* `dotenv-java`: Using environment variables for sensitive information is essential to avoid pushing unwanted information to a GitHub repository. We used a `.env` file to store our database credentials. The `dotenv-java` dependency by `io.github.cdimascio` makes using environment variables in Java very easy by using syntax like `dotenv.get("DB_URL")`.
+
 ## Requirements
 
 ### Functional
