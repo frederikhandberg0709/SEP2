@@ -65,3 +65,13 @@ Cross-platform support for Windows and macOS.
 Application must follow MVVM pattern with clear separation between View, ViewModel, and Model layers.
 
 Application must display all interface text and error messages in English.
+
+## System Architecture
+
+Our system consists of three tiers: Client, Server, and Data.
+
+The client tier acts as the presentation layer. It manages the user interface, such as switching between different scenes using the `SceneManager` class. It also handles all user interactions. For example, when a user sends a message, it passes through all the layer from `MainChatViewController` to `ChatClientImpl` before finally leaving the client tier.
+
+The server tier is responsible for the business logic, such as creating user accounts and handling client requests through RMI.
+
+The data tier is separate from the Java project and consists of the PostgreSQL database.
